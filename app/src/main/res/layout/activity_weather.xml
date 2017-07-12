@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hongtao.weather.activity.WeatherActivity">
+
+    <fragment
+        android:id="@+id/weatheractivity_fg_place"
+        android:name="com.hongtao.weather.activity.PlaceFragment"
+        android:layout_width="50dip"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_place"/>
+    <fragment
+        android:id="@+id/weatheractivity_fg_message"
+        android:name="com.hongtao.weather.activity.MessageFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_message"/>
+
+
+</LinearLayout>
