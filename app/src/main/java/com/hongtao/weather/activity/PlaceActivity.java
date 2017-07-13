@@ -187,4 +187,12 @@ public class PlaceActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("weatherId", "CN101280101");
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }

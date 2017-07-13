@@ -84,6 +84,7 @@ public class WeatherActivity extends AppCompatActivity {
         TVForecast3 = (TextView) findViewById(R.id.weather_tv_forecast3);
         LVHourForecast = (ListView) findViewById(R.id.forecast_lv_weather);
         Button BTChoose = (Button) findViewById(R.id.weatheractivity_bt_choose);
+
         BTChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +92,7 @@ public class WeatherActivity extends AppCompatActivity {
                 startActivityForResult(startPlaceActivity, 1);
             }
         });
+
         showWeather("CN101280101");
     }
 
