@@ -58,7 +58,8 @@ public class ShowService extends Service {
                         .setWhen(System.currentTimeMillis())
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                        .setContentIntent(pi)
+//                        .setContentIntent(pi)
+                        .setAutoCancel(true)
                         .build();
             }
             startForeground(1, mNotification);
