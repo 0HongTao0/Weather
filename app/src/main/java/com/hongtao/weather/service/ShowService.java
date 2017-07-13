@@ -3,8 +3,6 @@ package com.hongtao.weather.service;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Binder;
@@ -14,7 +12,6 @@ import android.support.v4.app.NotificationCompat;
 import com.hongtao.weather.R;
 import com.hongtao.weather.activity.WeatherActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
