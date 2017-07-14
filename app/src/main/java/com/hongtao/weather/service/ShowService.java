@@ -1,13 +1,17 @@
 package com.hongtao.weather.service;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.hongtao.weather.R;
 import com.hongtao.weather.activity.WeatherActivity;
@@ -27,8 +31,20 @@ public class ShowService extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        mShowBinder.updateStatus(intent.getStringArrayListExtra("List"));
+        AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        int anHour = 6 * 60 * 60 * 1000;
+        long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
+        Intent broadcastIntent = new Intent("com.weather.update");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(ShowService.this, 0, broadcastIntent, 0);
+        manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pendingIntent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
-        return mShowBinder;
+        return null;
     }
 
     @Override
@@ -40,8 +56,7 @@ public class ShowService extends Service {
 
     public class ShowBinder extends Binder {
         public void updateStatus(List<String> msg) {
-            Intent intent = new Intent(ShowService.this, WeatherActivity.class);
-            PendingIntent pi = PendingIntent.getActivity(ShowService.this, 0, intent, 0);
+
             if (msg == null) {
                 mNotification = new NotificationCompat.Builder(ShowService.this)
                         .setContentTitle("正在获取地点")
@@ -49,7 +64,6 @@ public class ShowService extends Service {
                         .setWhen(System.currentTimeMillis())
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                        .setContentIntent(pi)
                         .build();
             } else {
                 mNotification = new NotificationCompat.Builder(ShowService.this)
@@ -58,7 +72,6 @@ public class ShowService extends Service {
                         .setWhen(System.currentTimeMillis())
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-//                        .setContentIntent(pi)
                         .setAutoCancel(true)
                         .build();
             }

@@ -4,108 +4,138 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical"
     tools:context="com.hongtao.weather.activity.WeatherActivity">
 
-    <LinearLayout
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dip"
-            android:layout_margin="3sp">
-
-            <TextView
-                android:id="@+id/weather_tv_where"
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                android:layout_margin="3sp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="城市"
-                android:textSize="28sp"/>
-
-            <TextView
-                android:id="@+id/weather_tv_today"
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                android:layout_margin="3sp"
-                android:layout_weight="2"
-                android:text="云 ：            温度 ： \n风向：         风级 ："
-                android:textSize="23sp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_margin="3sp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20dip"
-                android:gravity="center"
-                android:text="未来几天的天气状况"/>
-
-            <TextView
-                android:id="@+id/weather_tv_forecast1"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
-                android:layout_margin="3sp"
                 android:layout_weight="1"
-                android:gravity="center"/>
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/weather_tv_forecast2"
-                android:layout_width="match_parent"
-                android:layout_height="0dip"
-                android:layout_margin="3sp"
-                android:layout_weight="1"
-                android:gravity="center"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="300dip"
+                    android:layout_margin="5sp"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/weather_tv_forecast3"
-                android:layout_width="match_parent"
-                android:layout_height="0dip"
-                android:layout_margin="3sp"
-                android:layout_weight="1"
-                android:gravity="center"/>
+                    <TextView
+                        android:id="@+id/weather_tv_where"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dip"
+                        android:layout_margin="5sp"
+                        android:gravity="center"
+                        android:text="阳春"
+                        android:textColor="#ffffff"
+                        android:textSize="25sp"/>
+
+                    <TextView
+                        android:id="@+id/now_tv_temperature"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_margin="5sp"
+                        android:layout_weight="3"
+                        android:gravity="center"
+                        android:text="28°"
+                        android:textColor="#ffffff"
+                        android:textSize="120sp"/>
+
+                    <TextView
+                        android:id="@+id/now_tv_sky"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textColor="#ffffff"
+                        android:textSize="25sp"/>
+
+                    <TextView
+                        android:id="@+id/now_tv_winddirection"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textColor="#ffffff"
+                        android:textSize="18sp"/>
+
+                    <TextView
+                        android:id="@+id/now_tv_air"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dip"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textColor="#ffffff"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5sp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="20dip"
+                        android:text="未来几小时的天气状况"
+                        android:textColor="#ffffff"/>
+
+                    <ListView
+                        android:id="@+id/hourforecast_lv_weather"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                    </ListView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5sp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="20dip"
+                        android:text="未来几天的天气状况"
+                        android:textColor="#ffffff"/>
+
+                    <ListView
+                        android:id="@+id/dailyforecast_lv_weather"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5sp">
+
+                    </ListView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <Button
+                android:id="@+id/weatheractivity_bt_choose"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="5sp"
+                android:text="请选择城市"/>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_margin="3dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20dip"
-                android:gravity="center"
-                android:text="未来几小时的天气状况"/>
-
-            <ListView
-                android:id="@+id/forecast_lv_weather"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </ListView>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/weatheractivity_bt_choose"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="请选择城市"/>
+    </ScrollView>
 
 
 </LinearLayout>

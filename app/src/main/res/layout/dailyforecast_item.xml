@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <TextView
+            android:textColor="#ffffff"
+            android:id="@+id/dailyforecast_tv_date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="30sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:orientation="vertical">
+
+        <TextView
+            android:textColor="#ffffff"
+            android:id="@+id/dailyforecast_tv_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:gravity="center"/>
+
+        <TextView
+            android:textColor="#ffffff"
+            android:id="@+id/dailyforecast_tv_sky"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:gravity="center"/>
+
+        <TextView
+            android:textColor="#ffffff"
+            android:id="@+id/dailyforecast_tv_winddirection"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:gravity="center"/>
+
+        <TextView
+            android:textColor="#ffffff"
+            android:id="@+id/dailyforecast_tv_windspeed"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:gravity="center"/>
+    </LinearLayout>
+
+</LinearLayout>

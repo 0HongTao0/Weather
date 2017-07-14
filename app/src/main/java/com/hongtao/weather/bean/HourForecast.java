@@ -6,8 +6,8 @@ package com.hongtao.weather.bean;
  */
 public class HourForecast {
     private String time;
-    private String wea;
-    private String tem;
+    private String sky;
+    private String temperature;
 
     public String getTime() {
         return time;
@@ -17,19 +17,19 @@ public class HourForecast {
         this.time = time;
     }
 
-    public String getWea() {
-        return wea;
+    public String getSky() {
+        return sky;
     }
 
-    public void setWea(String wea) {
-        this.wea = wea;
+    public void setSky(String sky) {
+        this.sky = sky;
     }
 
-    public String getTem() {
-        return tem;
+    public String getTemperature() {
+        return temperature;
     }
 
-    public void setTem(String tem) {
-        this.tem = tem;
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
     }
 }

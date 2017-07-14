@@ -46,7 +46,7 @@ public class HourForecastAdapter extends BaseAdapter {
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.forecast_item, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.hourforecast_item, null);
             viewHolder.TVTime = (TextView) convertView.findViewById(R.id.forecast_tv_time);
             viewHolder.TVTWea = (TextView) convertView.findViewById(R.id.forecast_tv_wea);
             viewHolder.TVTem = (TextView) convertView.findViewById(R.id.forecast_tv_tem);
@@ -55,12 +55,12 @@ public class HourForecastAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.TVTime.setText(mHourForecastList.get(position).getTime());
-        viewHolder.TVTWea.setText(mHourForecastList.get(position).getWea());
-        viewHolder.TVTem.setText(mHourForecastList.get(position).getTem());
+        viewHolder.TVTWea.setText(mHourForecastList.get(position).getSky());
+        viewHolder.TVTem.setText(mHourForecastList.get(position).getTemperature());
         return convertView;
     }
 
-    static class ViewHolder {
+    private static class ViewHolder {
         TextView TVTime;
         TextView TVTWea;
         TextView TVTem;

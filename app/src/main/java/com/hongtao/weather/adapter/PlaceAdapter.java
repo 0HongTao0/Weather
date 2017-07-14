@@ -55,7 +55,7 @@ public class PlaceAdapter extends BaseAdapter {
         return convertView;
     }
 
-    static class ViewHolder {
+    private static class ViewHolder {
         TextView mTextView;
     }
 }

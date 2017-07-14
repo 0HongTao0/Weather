@@ -10,6 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".activity.WeatherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -24,6 +25,14 @@
         <service android:name=".service.ShowService">
 
         </service>
+        <receiver
+            android:name=".activity.WeatherActivity$UpdateStatusReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.hongtao.weather.updateweather"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
