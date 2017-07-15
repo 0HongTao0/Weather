@@ -32,7 +32,7 @@ import java.util.List;
  * email：935245421@qq.com
  */
 public class PlaceActivity extends AppCompatActivity {
-    private ListView LVPlace;
+    private ListView LvPlace;
     private static final int UPDATE_PLACE = 1;
 
     private int placeType = 1;
@@ -53,7 +53,7 @@ public class PlaceActivity extends AppCompatActivity {
             switch (msg.what) {
                 case UPDATE_PLACE:
                     PlaceAdapter weatherAdapter = new PlaceAdapter(PlaceActivity.this, (List<Province>) msg.obj);
-                    LVPlace.setAdapter(weatherAdapter);
+                    LvPlace.setAdapter(weatherAdapter);
                     break;
             }
         }
@@ -67,9 +67,9 @@ public class PlaceActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        LVPlace = (ListView) findViewById(R.id.weatheractivity_lv_place);
+        LvPlace = (ListView) findViewById(R.id.weatheractivity_lv_place);
         showProvince(PLACE_ADDRESS);
-        LVPlace.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        LvPlace.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (placeType) {

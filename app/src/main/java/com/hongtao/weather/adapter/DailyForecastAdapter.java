@@ -2,7 +2,6 @@ package com.hongtao.weather.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,12 +51,12 @@ public class DailyForecastAdapter extends BaseAdapter {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.dailyforecast_item, null);
-            viewHolder.TVDate = (TextView) convertView.findViewById(R.id.dailyforecast_tv_date);
-            viewHolder.IVDaySky = (ImageView)convertView.findViewById(R.id.dailyforecast_iv_daysky);
-            viewHolder.IVNightSky = (ImageView)convertView.findViewById(R.id.dailyforecast_iv_nightsky);
-            viewHolder.TVTemperature = (TextView) convertView.findViewById(R.id.dailyforecast_tv_temperature);
-            viewHolder.TVWindDirection = (TextView) convertView.findViewById(R.id.dailyforecast_tv_winddirection);
-            viewHolder.TVWindSpeed = (TextView) convertView.findViewById(R.id.dailyforecast_tv_windspeed);
+            viewHolder.TvDate = (TextView) convertView.findViewById(R.id.dailyforecast_tv_date);
+            viewHolder.IvDaySky = (ImageView)convertView.findViewById(R.id.dailyforecast_iv_daysky);
+            viewHolder.IvNightSky = (ImageView)convertView.findViewById(R.id.dailyforecast_iv_nightsky);
+            viewHolder.TvTemperature = (TextView) convertView.findViewById(R.id.dailyforecast_tv_temperature);
+            viewHolder.TvWindDirection = (TextView) convertView.findViewById(R.id.dailyforecast_tv_winddirection);
+            viewHolder.TvWindSpeed = (TextView) convertView.findViewById(R.id.dailyforecast_tv_windspeed);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -66,26 +65,26 @@ public class DailyForecastAdapter extends BaseAdapter {
             @Override
             public void run() {
                 Bitmap bitmapDay = HttpUtil.downloadPic(ICON_ADDRESS + mDailyForecasts.get(position).getDaySky() + ".png");
-                new UpdateImageViewTask(bitmapDay, viewHolder.IVDaySky).execute();
+                new UpdateImageViewTask(bitmapDay, viewHolder.IvDaySky).execute();
                 Bitmap bitmapNight = HttpUtil.downloadPic(ICON_ADDRESS + mDailyForecasts.get(position).getNightSky() + ".png");
-                new UpdateImageViewTask(bitmapNight, viewHolder.IVNightSky).execute();
+                new UpdateImageViewTask(bitmapNight, viewHolder.IvNightSky).execute();
             }
         }).start();
         DailyForecast dailyForecast = mDailyForecasts.get(position);
-        viewHolder.TVDate.setText(dailyForecast.getDate().substring(5));
-        viewHolder.TVWindSpeed.setText(dailyForecast.getWindSpeed());
-        viewHolder.TVWindDirection.setText(dailyForecast.getWindDirection());
-        viewHolder.TVTemperature.setText(dailyForecast.getTemperature());
+        viewHolder.TvDate.setText(dailyForecast.getDate().substring(5));
+        viewHolder.TvWindSpeed.setText(dailyForecast.getWindSpeed());
+        viewHolder.TvWindDirection.setText(dailyForecast.getWindDirection());
+        viewHolder.TvTemperature.setText(dailyForecast.getTemperature());
         return convertView;
     }
 
     private static class ViewHolder {
-        TextView TVDate;
-        TextView TVTemperature;
-        TextView TVWindDirection;
-        TextView TVWindSpeed;
-        ImageView IVDaySky;
-        ImageView IVNightSky;
+        TextView TvDate;
+        TextView TvTemperature;
+        TextView TvWindDirection;
+        TextView TvWindSpeed;
+        ImageView IvDaySky;
+        ImageView IvNightSky;
     }
 
 

@@ -37,9 +37,9 @@ import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    private TextView TVName, TVNowTemperature, TVNowWindDirection, TVNowWindSpeed;
-    private ImageView IVNowSky;
-    private ListView LVHourForecast, LVDailyForecast;
+    private TextView TvName, TvNowTemperature, TvNowWindDirection, TvNowWindSpeed;
+    private ImageView IvNowSky;
+    private ListView LvHourForecast, LvDailyForecast;
     private UpdateStatusReceiver mReceiver;
     private IntentFilter mIntentFilter;
 
@@ -59,28 +59,28 @@ public class WeatherActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_WEATHER_CITY:
-                    TVName.setText((String) msg.obj);
+                    TvName.setText((String) msg.obj);
                     break;
                 case UPDATE_WEATHER_NOW:
                     NowWeather nowWeather = (NowWeather) msg.obj;
-                    TVNowTemperature.setText(nowWeather.getTemperature());
-                    TVNowWindSpeed.setText("空气质量" + nowWeather.getAir());
-                    TVNowWindDirection.setText(nowWeather.getWindDirection());
+                    TvNowTemperature.setText(nowWeather.getTemperature());
+                    TvNowWindSpeed.setText("空气质量" + nowWeather.getAir());
+                    TvNowWindDirection.setText(nowWeather.getWindDirection());
                     break;
                 case UPDATE_WEATHER_DAILYFORECAST:
                     DailyForecastAdapter dailyForecastAdapter = new DailyForecastAdapter(WeatherActivity.this, (List<DailyForecast>) msg.obj);
-                    LVDailyForecast.setAdapter(dailyForecastAdapter);
+                    LvDailyForecast.setAdapter(dailyForecastAdapter);
                     break;
                 case UPDATE_WEATHER_HOURFORECAST:
                     HourForecastAdapter adapter = new HourForecastAdapter(WeatherActivity.this, (List<HourForecast>) msg.obj);
-                    LVHourForecast.setAdapter(adapter);
+                    LvHourForecast.setAdapter(adapter);
                     break;
                 case UPDATE_IMAGEVIEW:
-                    IVNowSky.setImageBitmap((Bitmap) msg.obj);
+                    IvNowSky.setImageBitmap((Bitmap) msg.obj);
                     break;
             }
-            UIUtil.setListViewHeightBasedOnChildren(LVDailyForecast);
-            UIUtil.setListViewHeightBasedOnChildren(LVHourForecast);
+            UIUtil.setListViewHeightBasedOnChildren(LvDailyForecast);
+            UIUtil.setListViewHeightBasedOnChildren(LvHourForecast);
         }
     };
 
@@ -93,15 +93,15 @@ public class WeatherActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        TVName = (TextView) findViewById(R.id.weather_tv_where);
+        TvName = (TextView) findViewById(R.id.weather_tv_where);
 
-        TVNowTemperature = (TextView) findViewById(R.id.now_tv_temperature);
-        TVNowWindDirection = (TextView) findViewById(R.id.now_tv_winddirection);
-        IVNowSky = (ImageView) findViewById(R.id.now_iv_sky);
-        TVNowWindSpeed = (TextView) findViewById(R.id.now_tv_air);
+        TvNowTemperature = (TextView) findViewById(R.id.now_tv_temperature);
+        TvNowWindDirection = (TextView) findViewById(R.id.now_tv_winddirection);
+        IvNowSky = (ImageView) findViewById(R.id.now_iv_sky);
+        TvNowWindSpeed = (TextView) findViewById(R.id.now_tv_air);
 
-        LVHourForecast = (ListView) findViewById(R.id.hourforecast_lv_weather);
-        LVDailyForecast = (ListView) findViewById(R.id.dailyforecast_lv_weather);
+        LvHourForecast = (ListView) findViewById(R.id.hourforecast_lv_weather);
+        LvDailyForecast = (ListView) findViewById(R.id.dailyforecast_lv_weather);
         Button BTChoose = (Button) findViewById(R.id.weatheractivity_bt_choose);
 
         BTChoose.setOnClickListener(new View.OnClickListener() {

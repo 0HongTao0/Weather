@@ -51,28 +51,28 @@ public class HourForecastAdapter extends BaseAdapter {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.hourforecast_item, null);
-            viewHolder.TVTime = (TextView) convertView.findViewById(R.id.hourforecast_tv_time);
-            viewHolder.IVSky = (ImageView) convertView.findViewById(R.id.hourforecast_iv_sky);
-            viewHolder.TVTem = (TextView) convertView.findViewById(R.id.hourforecast_tv_temperature);
+            viewHolder.TvTime = (TextView) convertView.findViewById(R.id.hourforecast_tv_time);
+            viewHolder.IvSky = (ImageView) convertView.findViewById(R.id.hourforecast_iv_sky);
+            viewHolder.TvTemperature = (TextView) convertView.findViewById(R.id.hourforecast_tv_temperature);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.TVTime.setText(mHourForecastList.get(position).getTime().substring(10));
+        viewHolder.TvTime.setText(mHourForecastList.get(position).getTime().substring(10));
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Bitmap bitmap = HttpUtil.downloadPic(ICON_ADDRESS + mHourForecastList.get(position).getSky() + ".png");
-                new UpdateImageViewTask(bitmap, viewHolder.IVSky).execute();
+                new UpdateImageViewTask(bitmap, viewHolder.IvSky).execute();
             }
         }).start();
-        viewHolder.TVTem.setText(mHourForecastList.get(position).getTemperature());
+        viewHolder.TvTemperature.setText(mHourForecastList.get(position).getTemperature());
         return convertView;
     }
 
     private static class ViewHolder {
-        TextView TVTime;
-        ImageView IVSky;
-        TextView TVTem;
+        TextView TvTime;
+        ImageView IvSky;
+        TextView TvTemperature;
     }
 }
