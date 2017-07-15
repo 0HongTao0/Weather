@@ -52,15 +52,6 @@
                         android:textSize="120sp"/>
 
                     <TextView
-                        android:id="@+id/now_tv_sky"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dip"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textColor="#ffffff"
-                        android:textSize="25sp"/>
-
-                    <TextView
                         android:id="@+id/now_tv_winddirection"
                         android:layout_width="match_parent"
                         android:layout_height="0dip"
@@ -68,6 +59,15 @@
                         android:gravity="center"
                         android:textColor="#ffffff"
                         android:textSize="18sp"/>
+
+                    <ImageView
+                        android:id="@+id/now_iv_sky"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dip"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:textColor="#ffffff"
+                        android:textSize="25sp"/>
 
                     <TextView
                         android:id="@+id/now_tv_air"
@@ -132,6 +132,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_margin="5sp"
+                android:background="@android:color/transparent"
                 android:text="请选择城市"/>
 
         </LinearLayout>

@@ -1,19 +1,18 @@
 package com.hongtao.weather.activity;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,25 +32,27 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    private TextView TVName, TVNowTemperature, TVNowSky, TVNowWindDirection, TVNowWindSpeed;
+    private TextView TVName, TVNowTemperature, TVNowWindDirection, TVNowWindSpeed;
+    private ImageView IVNowSky;
     private ListView LVHourForecast, LVDailyForecast;
     private UpdateStatusReceiver mReceiver;
     private IntentFilter mIntentFilter;
 
     private static final String WEATHER_ADDRESS = "http://guolin.tech/api/weather?cityid=";
     private static final String WEATHER_KEY = "&key=6c455039547e4d60a4da6c2e60d863b9";
+    private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
 
     private String nowWeatherId = "CN101280101";  //广州天气ID
     private static final int UPDATE_WEATHER_CITY = 0;
     private static final int UPDATE_WEATHER_NOW = 1;
     private static final int UPDATE_WEATHER_DAILYFORECAST = 2;
     private static final int UPDATE_WEATHER_HOURFORECAST = 3;
+    private static final int UPDATE_IMAGEVIEW = 4;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -64,7 +65,6 @@ public class WeatherActivity extends AppCompatActivity {
                     NowWeather nowWeather = (NowWeather) msg.obj;
                     TVNowTemperature.setText(nowWeather.getTemperature());
                     TVNowWindSpeed.setText("空气质量" + nowWeather.getAir());
-                    TVNowSky.setText(nowWeather.getSky());
                     TVNowWindDirection.setText(nowWeather.getWindDirection());
                     break;
                 case UPDATE_WEATHER_DAILYFORECAST:
@@ -74,6 +74,9 @@ public class WeatherActivity extends AppCompatActivity {
                 case UPDATE_WEATHER_HOURFORECAST:
                     HourForecastAdapter adapter = new HourForecastAdapter(WeatherActivity.this, (List<HourForecast>) msg.obj);
                     LVHourForecast.setAdapter(adapter);
+                    break;
+                case UPDATE_IMAGEVIEW:
+                    IVNowSky.setImageBitmap((Bitmap) msg.obj);
                     break;
             }
             UIUtil.setListViewHeightBasedOnChildren(LVDailyForecast);
@@ -94,7 +97,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         TVNowTemperature = (TextView) findViewById(R.id.now_tv_temperature);
         TVNowWindDirection = (TextView) findViewById(R.id.now_tv_winddirection);
-        TVNowSky = (TextView) findViewById(R.id.now_tv_sky);
+        IVNowSky = (ImageView) findViewById(R.id.now_iv_sky);
         TVNowWindSpeed = (TextView) findViewById(R.id.now_tv_air);
 
         LVHourForecast = (ListView) findViewById(R.id.hourforecast_lv_weather);
@@ -128,21 +131,31 @@ public class WeatherActivity extends AppCompatActivity {
 
                     HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_CITY, jsonObject.getJSONObject("basic").getString("city"));
 
-                    NowWeather nowWeather = new NowWeather();
+                    final NowWeather nowWeather = new NowWeather();
                     nowWeather.setTemperature(jsonObject.getJSONObject("now").getString("tmp") + "°");
-                    nowWeather.setSky(jsonObject.getJSONObject("now").getJSONObject("cond").getString("txt"));
+                    nowWeather.setSky(jsonObject.getJSONObject("now").getJSONObject("cond").getString("code"));
                     nowWeather.setWindDirection(jsonObject.getJSONObject("now").getJSONObject("wind").getString("dir"));
                     nowWeather.setAir(jsonObject.getJSONObject("aqi").getJSONObject("city").getString("qlty"));
                     HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
-
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Bitmap bitmap = HttpUtil.downloadPic(ICON_ADDRESS + nowWeather.getSky() + ".png");
+                            Message msg = new Message();
+                            msg.what = UPDATE_IMAGEVIEW;
+                            msg.obj = bitmap;
+                            mHandler.sendMessage(msg);
+                        }
+                    }).start();
                     List<DailyForecast> dailyForecastList = new ArrayList<>();
                     for (int i = 0; i < jsonObject.getJSONArray("daily_forecast").length(); i++) {
                         DailyForecast dailyForecast = new DailyForecast();
                         dailyForecast.setDate(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getString("date"));
-                        dailyForecast.setSky("白天" + jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("cond").getString("txt_d") + "/夜晚" + jsonObject.getJSONArray("daily_forecast").getJSONObject(0).getJSONObject("cond").getString("txt_d"));
+                        dailyForecast.setDaySky(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("cond").getString("code_d"));
+                        dailyForecast.setNightSky(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("cond").getString("code_n"));
                         dailyForecast.setTemperature(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("tmp").getString("max") + "°~" + jsonObject.getJSONArray("daily_forecast").getJSONObject(0).getJSONObject("tmp").getString("min") + "°");
                         dailyForecast.setWindDirection(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("wind").getString("dir"));
-                        dailyForecast.setWindSpeed(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("wind").getString("spd") + "级");
+                        dailyForecast.setWindSpeed(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("wind").getString("spd") + "km/h");
                         dailyForecastList.add(dailyForecast);
                     }
                     HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_DAILYFORECAST, dailyForecastList);
@@ -150,18 +163,18 @@ public class WeatherActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonObject.getJSONArray("hourly_forecast").length(); i++) {
                         HourForecast hourForecast = new HourForecast();
                         hourForecast.setTime(jsonObject.getJSONArray("hourly_forecast").getJSONObject(i).getString("date"));
-                        hourForecast.setSky(jsonObject.getJSONArray("hourly_forecast").getJSONObject(i).getJSONObject("cond").getString("txt"));
+                        hourForecast.setSky(jsonObject.getJSONArray("hourly_forecast").getJSONObject(i).getJSONObject("cond").getString("code"));
                         hourForecast.setTemperature(jsonObject.getJSONArray("hourly_forecast").getJSONObject(i).getString("tmp") + "°");
                         hourForecasts.add(hourForecast);
                     }
                     HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_HOURFORECAST, hourForecasts);
 
-                    List<String> msgList = new ArrayList();
+                    List<String> msgList = new ArrayList<>();
                     msgList.add(jsonObject.getJSONObject("basic").getString("city"));
                     msgList.add("温度" + jsonObject.getJSONObject("now").getString("tmp") + "°/" +
                             jsonObject.getJSONObject("now").getJSONObject("cond").getString("txt") + "/" +
                             jsonObject.getJSONObject("now").getJSONObject("wind").getString("dir") + "/" +
-                            "风力" + jsonObject.getJSONObject("now").getJSONObject("wind").getString("spd")+"级");
+                            "风速" + jsonObject.getJSONObject("now").getJSONObject("wind").getString("spd") + "km/h");
 
                     Intent bindIntent = new Intent(WeatherActivity.this, ShowService.class);
                     bindIntent.putStringArrayListExtra("List", (ArrayList<String>) msgList);

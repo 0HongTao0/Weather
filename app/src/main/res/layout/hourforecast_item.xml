@@ -5,17 +5,15 @@
 
     <TextView
         android:textColor="#ffffff"
-        android:id="@+id/forecast_tv_time"
+        android:id="@+id/hourforecast_tv_time"
         android:layout_width="0dip"
         android:textSize="25sp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"/>
 
-    <TextView
-        android:textColor="#ffffff"
-        android:textSize="25sp"
-        android:id="@+id/forecast_tv_wea"
+    <ImageView
+        android:id="@+id/hourforecast_iv_sky"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -24,7 +22,7 @@
     <TextView
         android:textColor="#ffffff"
         android:textSize="25sp"
-        android:id="@+id/forecast_tv_tem"
+        android:id="@+id/hourforecast_tv_temperature"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"

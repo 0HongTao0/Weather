@@ -1,14 +1,18 @@
 package com.hongtao.weather.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hongtao.weather.R;
 import com.hongtao.weather.bean.HourForecast;
+import com.hongtao.weather.util.HttpUtil;
+import com.hongtao.weather.util.UpdateImageViewTask;
 
 import java.util.List;
 
@@ -17,7 +21,7 @@ import java.util.List;
  * email：935245421@qq.com
  */
 public class HourForecastAdapter extends BaseAdapter {
-
+    private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
     private Context mContext;
     private List<HourForecast> mHourForecastList;
 
@@ -42,27 +46,33 @@ public class HourForecastAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.hourforecast_item, null);
-            viewHolder.TVTime = (TextView) convertView.findViewById(R.id.forecast_tv_time);
-            viewHolder.TVTWea = (TextView) convertView.findViewById(R.id.forecast_tv_wea);
-            viewHolder.TVTem = (TextView) convertView.findViewById(R.id.forecast_tv_tem);
+            viewHolder.TVTime = (TextView) convertView.findViewById(R.id.hourforecast_tv_time);
+            viewHolder.IVSky = (ImageView) convertView.findViewById(R.id.hourforecast_iv_sky);
+            viewHolder.TVTem = (TextView) convertView.findViewById(R.id.hourforecast_tv_temperature);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.TVTime.setText(mHourForecastList.get(position).getTime());
-        viewHolder.TVTWea.setText(mHourForecastList.get(position).getSky());
+        viewHolder.TVTime.setText(mHourForecastList.get(position).getTime().substring(10));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = HttpUtil.downloadPic(ICON_ADDRESS + mHourForecastList.get(position).getSky() + ".png");
+                new UpdateImageViewTask(bitmap, viewHolder.IVSky).execute();
+            }
+        }).start();
         viewHolder.TVTem.setText(mHourForecastList.get(position).getTemperature());
         return convertView;
     }
 
     private static class ViewHolder {
         TextView TVTime;
-        TextView TVTWea;
+        ImageView IVSky;
         TextView TVTem;
     }
 }

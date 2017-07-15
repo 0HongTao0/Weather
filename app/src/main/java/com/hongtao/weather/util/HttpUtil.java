@@ -1,5 +1,8 @@
 package com.hongtao.weather.util;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +18,7 @@ import java.net.URL;
 public class HttpUtil {
     /**
      * 发送网络请求，并接收返回数据
+     *
      * @param address
      * @return String
      */
@@ -49,5 +53,32 @@ public class HttpUtil {
             }
         }
         return stringBuilder.toString();
+    }
+
+    static public Bitmap downloadPic(String address) {
+        InputStream is = null;
+        Bitmap bitmap = null;
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(address);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            is = connection.getInputStream();
+            bitmap = BitmapFactory.decodeStream(is);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return bitmap;
     }
 }

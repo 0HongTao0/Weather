@@ -7,7 +7,8 @@ package com.hongtao.weather.bean;
 public class DailyForecast {
     private String date;
     private String temperature;
-    private String sky;
+    private String daySky;
+    private String nightSky;
     private String windDirection;
     private String windSpeed;
 
@@ -27,12 +28,12 @@ public class DailyForecast {
         this.temperature = temperature;
     }
 
-    public String getSky() {
-        return sky;
+    public String getDaySky() {
+        return daySky;
     }
 
-    public void setSky(String sky) {
-        this.sky = sky;
+    public void setDaySky(String daySky) {
+        this.daySky = daySky;
     }
 
     public String getWindDirection() {
@@ -49,5 +50,13 @@ public class DailyForecast {
 
     public void setWindSpeed(String windSpeed) {
         this.windSpeed = windSpeed;
+    }
+
+    public String getNightSky() {
+        return nightSky;
+    }
+
+    public void setNightSky(String nightSky) {
+        this.nightSky = nightSky;
     }
 }

@@ -10,12 +10,12 @@
         android:layout_weight="1">
 
         <TextView
-            android:textColor="#ffffff"
             android:id="@+id/dailyforecast_tv_date"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textSize="30sp"/>
+            android:textColor="#ffffff"
+            android:textSize="20sp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -25,36 +25,41 @@
         android:orientation="vertical">
 
         <TextView
-            android:textColor="#ffffff"
             android:id="@+id/dailyforecast_tv_temperature"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:textColor="#ffffff"/>
+
 
         <TextView
-            android:textColor="#ffffff"
-            android:id="@+id/dailyforecast_tv_sky"
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:gravity="center"/>
-
-        <TextView
-            android:textColor="#ffffff"
             android:id="@+id/dailyforecast_tv_winddirection"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:textColor="#ffffff"/>
 
         <TextView
-            android:textColor="#ffffff"
             android:id="@+id/dailyforecast_tv_windspeed"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:textColor="#ffffff"/>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/dailyforecast_iv_daysky"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <ImageView
+        android:id="@+id/dailyforecast_iv_nightsky"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 
 </LinearLayout>

@@ -56,7 +56,6 @@ public class ShowService extends Service {
 
     public class ShowBinder extends Binder {
         public void updateStatus(List<String> msg) {
-
             if (msg == null) {
                 mNotification = new NotificationCompat.Builder(ShowService.this)
                         .setContentTitle("正在获取地点")

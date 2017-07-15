@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.hongtao.weather.R;
 import com.hongtao.weather.adapter.PlaceAdapter;
@@ -61,6 +63,10 @@ public class PlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
         LVPlace = (ListView) findViewById(R.id.weatheractivity_lv_place);
         showProvince(PLACE_ADDRESS);
         LVPlace.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -90,6 +96,13 @@ public class PlaceActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (placeType == 1) {
+                    Intent intent = new Intent();
+                    intent.putExtra("weatherId", "CN101280101");
+                    setResult(RESULT_OK, intent);
+                    Toast.makeText(PlaceActivity.this, "已自动选择广州", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
                 switch (placeType) {
                     case TYPE_DISTRICT:
                         requestAddress = requestAddress.substring(0, requestAddress.lastIndexOf("/"));
@@ -192,6 +205,7 @@ public class PlaceActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent();
         intent.putExtra("weatherId", "CN101280101");
+        Toast.makeText(PlaceActivity.this, "已自动选择广州", Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK, intent);
         finish();
     }

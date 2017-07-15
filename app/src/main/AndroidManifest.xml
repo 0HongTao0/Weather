@@ -27,8 +27,8 @@
         </service>
         <receiver
             android:name=".activity.WeatherActivity$UpdateStatusReceiver"
-            android:exported="true"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.hongtao.weather.updateweather"/>
             </intent-filter>
