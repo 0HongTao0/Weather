@@ -5,6 +5,7 @@ package com.hongtao.weather.bean;
  * email：935245421@qq.com
  */
 public class NowWeather {
+    private String city;
     private String temperature;
     private String sky;
     private String windDirection;
@@ -40,5 +41,13 @@ public class NowWeather {
 
     public void setAir(String air) {
         this.air = air;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }

@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.util.Log;
 
 import com.hongtao.weather.R;
 import com.hongtao.weather.activity.WeatherActivity;
+import com.hongtao.weather.util.HttpUtil;
 
 import java.util.List;
 
@@ -31,8 +33,13 @@ public class ShowService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        mShowBinder.updateStatus(intent.getStringArrayListExtra("List"));
+    public int onStartCommand(final Intent intent, int flags, int startId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mShowBinder.updateStatus(intent.getStringArrayListExtra("List"));
+            }
+        }).start();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int anHour = 6 * 60 * 60 * 1000;
         long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
@@ -65,12 +72,13 @@ public class ShowService extends Service {
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                         .build();
             } else {
+                Bitmap bitmap = HttpUtil.downloadPic(msg.get(2));
                 mNotification = new NotificationCompat.Builder(ShowService.this)
                         .setContentTitle(msg.get(0))
                         .setContentText(msg.get(1))
                         .setWhen(System.currentTimeMillis())
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                        .setLargeIcon(bitmap)
                         .setAutoCancel(true)
                         .build();
             }

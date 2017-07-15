@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hongtao.weather.R;
 import com.hongtao.weather.adapter.DailyForecastAdapter;
@@ -48,7 +50,6 @@ public class WeatherActivity extends AppCompatActivity {
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
 
     private String nowWeatherId = "CN101280101";  //广州天气ID
-    private static final int UPDATE_WEATHER_CITY = 0;
     private static final int UPDATE_WEATHER_NOW = 1;
     private static final int UPDATE_WEATHER_DAILYFORECAST = 2;
     private static final int UPDATE_WEATHER_HOURFORECAST = 3;
@@ -58,13 +59,11 @@ public class WeatherActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case UPDATE_WEATHER_CITY:
-                    TvName.setText((String) msg.obj);
-                    break;
                 case UPDATE_WEATHER_NOW:
                     NowWeather nowWeather = (NowWeather) msg.obj;
+                    TvName.setText(nowWeather.getCity());
                     TvNowTemperature.setText(nowWeather.getTemperature());
-                    TvNowWindSpeed.setText("空气质量" + nowWeather.getAir());
+                    TvNowWindSpeed.setText(nowWeather.getAir());
                     TvNowWindDirection.setText(nowWeather.getWindDirection());
                     break;
                 case UPDATE_WEATHER_DAILYFORECAST:
@@ -103,6 +102,15 @@ public class WeatherActivity extends AppCompatActivity {
         LvHourForecast = (ListView) findViewById(R.id.hourforecast_lv_weather);
         LvDailyForecast = (ListView) findViewById(R.id.dailyforecast_lv_weather);
         Button BTChoose = (Button) findViewById(R.id.weatheractivity_bt_choose);
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.weather_sl_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                showWeather(nowWeatherId);
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(WeatherActivity.this, "已经更新天气状况", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         BTChoose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,13 +137,16 @@ public class WeatherActivity extends AppCompatActivity {
                     JSONArray weather = jsonObject.getJSONArray("HeWeather");
                     jsonObject = ParseUtil.parseJSONForJSONObject(weather.getJSONObject(0).toString());
 
-                    HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_CITY, jsonObject.getJSONObject("basic").getString("city"));
-
                     final NowWeather nowWeather = new NowWeather();
+                    nowWeather.setCity(jsonObject.getJSONObject("basic").getString("city"));
                     nowWeather.setTemperature(jsonObject.getJSONObject("now").getString("tmp") + "°");
                     nowWeather.setSky(jsonObject.getJSONObject("now").getJSONObject("cond").getString("code"));
                     nowWeather.setWindDirection(jsonObject.getJSONObject("now").getJSONObject("wind").getString("dir"));
-                    nowWeather.setAir(jsonObject.getJSONObject("aqi").getJSONObject("city").getString("qlty"));
+                    if (jsonObject.isNull("aqi")) {
+                        nowWeather.setAir("暂无空气质量状况");
+                    } else {
+                        nowWeather.setAir("空气质量" + jsonObject.getJSONObject("aqi").getJSONObject("city").getString("qlty"));
+                    }
                     HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
                     new Thread(new Runnable() {
                         @Override
@@ -175,6 +186,7 @@ public class WeatherActivity extends AppCompatActivity {
                             jsonObject.getJSONObject("now").getJSONObject("cond").getString("txt") + "/" +
                             jsonObject.getJSONObject("now").getJSONObject("wind").getString("dir") + "/" +
                             "风速" + jsonObject.getJSONObject("now").getJSONObject("wind").getString("spd") + "km/h");
+                    msgList.add(ICON_ADDRESS + jsonObject.getJSONObject("now").getJSONObject("cond").getString("code") + ".png");
 
                     Intent bindIntent = new Intent(WeatherActivity.this, ShowService.class);
                     bindIntent.putStringArrayListExtra("List", (ArrayList<String>) msgList);
