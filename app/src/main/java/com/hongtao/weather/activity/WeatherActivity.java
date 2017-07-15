@@ -204,4 +204,10 @@ public class WeatherActivity extends AppCompatActivity {
             showWeather(nowWeatherId);
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
 }
