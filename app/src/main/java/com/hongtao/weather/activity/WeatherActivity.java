@@ -152,10 +152,7 @@ public class WeatherActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             Bitmap bitmap = HttpUtil.downloadPic(ICON_ADDRESS + nowWeather.getSky() + ".png");
-                            Message msg = new Message();
-                            msg.what = UPDATE_IMAGEVIEW;
-                            msg.obj = bitmap;
-                            mHandler.sendMessage(msg);
+                            HandlerUtil.sendMessageToHandler(mHandler, UPDATE_IMAGEVIEW, bitmap);
                         }
                     }).start();
                     List<DailyForecast> dailyForecastList = new ArrayList<>();
