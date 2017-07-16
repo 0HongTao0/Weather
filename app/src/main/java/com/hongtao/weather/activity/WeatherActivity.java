@@ -49,7 +49,7 @@ public class WeatherActivity extends AppCompatActivity {
     private static final String WEATHER_KEY = "&key=6c455039547e4d60a4da6c2e60d863b9";
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
 
-    private String nowWeatherId = "CN101280101";  //广州天气ID
+    private String nowWeatherId = "CN101280101";  //广州天气状况ID
     private static final int UPDATE_WEATHER_NOW = 1;
     private static final int UPDATE_WEATHER_DAILYFORECAST = 2;
     private static final int UPDATE_WEATHER_HOURFORECAST = 3;
