@@ -17,6 +17,7 @@ import com.hongtao.weather.adapter.PlaceAdapter;
 import com.hongtao.weather.bean.City;
 import com.hongtao.weather.bean.District;
 import com.hongtao.weather.bean.Province;
+import com.hongtao.weather.util.HandlerUtil;
 import com.hongtao.weather.util.HttpUtil;
 import com.hongtao.weather.util.ParseUtil;
 
@@ -139,10 +140,7 @@ public class PlaceActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                Message msg = new Message();
-                msg.obj = districts;
-                msg.what = UPDATE_PLACE;
-                mHandler.sendMessage(msg);
+                HandlerUtil.sendMessageToHandler(mHandler, UPDATE_PLACE, districts);
             }
         }).start();
     }
@@ -166,10 +164,7 @@ public class PlaceActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                Message msg = new Message();
-                msg.obj = cities;
-                msg.what = UPDATE_PLACE;
-                mHandler.sendMessage(msg);
+                HandlerUtil.sendMessageToHandler(mHandler, UPDATE_PLACE, cities);
             }
         }).start();
     }
@@ -193,10 +188,7 @@ public class PlaceActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                Message msg = new Message();
-                msg.obj = provinces;
-                msg.what = UPDATE_PLACE;
-                mHandler.sendMessage(msg);
+                HandlerUtil.sendMessageToHandler(mHandler, UPDATE_PLACE, provinces);
             }
         }).start();
     }

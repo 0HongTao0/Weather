@@ -50,7 +50,7 @@ public class HourForecastAdapter extends BaseAdapter {
         final ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.hourforecast_item, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.itme_lv_hourforecast, null);
             viewHolder.TvTime = (TextView) convertView.findViewById(R.id.hourforecast_tv_time);
             viewHolder.IvSky = (ImageView) convertView.findViewById(R.id.hourforecast_iv_sky);
             viewHolder.TvTemperature = (TextView) convertView.findViewById(R.id.hourforecast_tv_temperature);

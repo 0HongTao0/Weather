@@ -45,7 +45,7 @@ public class PlaceAdapter extends BaseAdapter {
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.place_item, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_lv_place, null);
             viewHolder.mTextView = (TextView) convertView.findViewById(R.id.listviewitem_tv_place);
             convertView.setTag(viewHolder);
         } else {

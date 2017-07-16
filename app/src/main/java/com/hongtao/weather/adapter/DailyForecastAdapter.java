@@ -50,7 +50,7 @@ public class DailyForecastAdapter extends BaseAdapter {
         final ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.dailyforecast_item, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_lv_dailyforecast, null);
             viewHolder.TvDate = (TextView) convertView.findViewById(R.id.dailyforecast_tv_date);
             viewHolder.IvDaySky = (ImageView)convertView.findViewById(R.id.dailyforecast_iv_daysky);
             viewHolder.IvNightSky = (ImageView)convertView.findViewById(R.id.dailyforecast_iv_nightsky);
