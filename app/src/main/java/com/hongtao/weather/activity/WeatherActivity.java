@@ -45,7 +45,6 @@ import java.util.List;
 public class WeatherActivity extends AppCompatActivity {
 
     private TextView mTvName, mTvNowTemperature, mTvNowWindDirection, mTvNowWindSpeed;
-    private ImageView mIvNowSky;
     private NetworkImageView mNivNowSky;
     private RecyclerView mRvDailyForecast, mRvHourForecast;
     private UpdateStatusReceiver mReceiver;
@@ -60,7 +59,6 @@ public class WeatherActivity extends AppCompatActivity {
     private static final int UPDATE_WEATHER_NOW = 1;
     private static final int UPDATE_WEATHER_DAILYFORECAST = 2;
     private static final int UPDATE_WEATHER_HOURFORECAST = 3;
-    private static final int UPDATE_IMAGEVIEW = 4;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -126,8 +124,10 @@ public class WeatherActivity extends AppCompatActivity {
         mBtChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WeatherActivity.this, PlaceActivity.class);
-                startActivityForResult(intent, 1);
+//                Intent intent = new Intent(WeatherActivity.this, PlaceActivity.class);
+//                startActivityForResult(intent, 1);
+                Intent intent = new Intent(WeatherActivity.this, ChoosePlaceActivity.class);
+                startActivity(intent);
             }
         });
 

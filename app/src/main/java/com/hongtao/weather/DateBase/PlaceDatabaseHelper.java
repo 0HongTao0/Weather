@@ -13,10 +13,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class PlaceDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_PLACE = "create table Place (" +
-            "id varchar primary key" +
-            "above_id varchar" +
-            "name varchar" +
-            "weather_id varchar)";
+            "id varchar primary key," +
+            "above_id text," +
+            "name text," +
+            "weather_id text)";
 
     public PlaceDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);

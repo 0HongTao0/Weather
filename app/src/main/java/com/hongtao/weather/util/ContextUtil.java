@@ -1,4 +1,4 @@
-package com.hongtao.weather.activity;
+package com.hongtao.weather.util;
 
 import android.app.Application;
 import android.content.Context;
@@ -8,16 +8,16 @@ import android.content.Context;
  * email：935245421@qq.com
  * mobile：18306620711
  */
-public class WeatherApplication extends Application {
-    private static Context sContext;
+public class ContextUtil extends Application {
+    private static Context context;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        sContext = getApplicationContext();
+        context = getApplicationContext();
     }
 
     public static Context getContext() {
-        return sContext;
+        return context;
     }
 }

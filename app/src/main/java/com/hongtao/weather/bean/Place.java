@@ -1,16 +1,15 @@
 package com.hongtao.weather.bean;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * author：Administrator on 2017/7/12/012 14:41
+ * author：hongtao on 2017/7/18/018 13:29
  * email：935245421@qq.com
+ * mobile：18306620711
  */
-public class District extends City {
-    @SerializedName("weather_id")
-    private String weatherId;
+public class Place {
     private String id;
     private String name;
+    private String aboveId;
+    private String weatherId;
 
     public String getId() {
         return id;
@@ -28,10 +27,17 @@ public class District extends City {
         this.name = name;
     }
 
+    public String getAboveId() {
+        return aboveId;
+    }
+
+    public void setAboveId(String aboveId) {
+        this.aboveId = aboveId;
+    }
+
     public String getWeatherId() {
         return weatherId;
     }
-
 
     public void setWeatherId(String weatherId) {
         this.weatherId = weatherId;
