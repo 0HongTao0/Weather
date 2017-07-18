@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">某风天气</string>
+    <string name="button_choose">请选择城市</string>
+    <string name="textview_hourforecast">今天各时段天气状况</string>
+    <string name="textview_dailyforecast">未来几天的天气状况</string>
+    <string name="textview_getaddress">正在获取地址.....</string>
+    <string name="button_back">返回</string>
+    <string name="no_weather">暂无空气质量状况</string>
+    <string name="air">空气质量</string>
+    <string name="single_slash">/</string>
+    <string name="temperature">°</string>
+
 </resources>

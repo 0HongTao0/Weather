@@ -5,15 +5,15 @@ package com.hongtao.weather.bean;
  * email：935245421@qq.com
  */
 public class District extends City {
-    private String weather_id;
+    private String weatherId;
 
 
-    public String getWeather_id() {
-        return weather_id;
+    public String getWeatherId() {
+        return weatherId;
     }
 
 
-    public void setWeather_id(String weather_id) {
-        this.weather_id = weather_id;
+    public void setWeatherId(String weatherId) {
+        this.weatherId = weatherId;
     }
 }

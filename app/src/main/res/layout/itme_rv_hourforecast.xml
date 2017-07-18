@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="wrap_content">
 
     <TextView
-        android:textColor="#ffffff"
         android:id="@+id/hourforecast_tv_time"
         android:layout_width="0dip"
-        android:textSize="25sp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:textColor="@color/White"
+        android:textSize="25sp"/>
 
-    <ImageView
-        android:id="@+id/hourforecast_iv_sky"
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/hourforecast_niv_sky"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"/>
 
     <TextView
-        android:textColor="#ffffff"
-        android:textSize="25sp"
         android:id="@+id/hourforecast_tv_temperature"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:textColor="@color/White"
+        android:textSize="25sp"/>
 
 </LinearLayout>

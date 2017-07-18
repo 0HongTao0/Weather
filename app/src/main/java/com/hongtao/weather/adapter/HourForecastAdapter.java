@@ -1,78 +1,79 @@
 package com.hongtao.weather.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Bitmap;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.Volley;
 import com.hongtao.weather.R;
 import com.hongtao.weather.bean.HourForecast;
-import com.hongtao.weather.util.HttpUtil;
-import com.hongtao.weather.util.UpdateImageViewTask;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
- * author：Administrator on 2017/7/13/013 10:20
+ * author：hongtao on 2017/7/18/018 08:57
  * email：935245421@qq.com
+ * mobile：18306620711
  */
-public class HourForecastAdapter extends BaseAdapter {
+public class HourForecastAdapter extends RecyclerView.Adapter<HourForecastAdapter.ViewHolder> {
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
-    private Context mContext;
+    private WeakReference<Activity> mActivityWeakReference;
     private List<HourForecast> mHourForecastList;
 
-    public HourForecastAdapter(Context context, List<HourForecast> hourForecasts) {
-        this.mContext = context;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView mTvTime, mTvTemperature;
+        NetworkImageView mNivSky;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            mTvTime = (TextView) itemView.findViewById(R.id.hourforecast_tv_time);
+            mTvTemperature = (TextView) itemView.findViewById(R.id.hourforecast_tv_temperature);
+            mNivSky = (NetworkImageView) itemView.findViewById(R.id.hourforecast_niv_sky);
+        }
+    }
+
+    public HourForecastAdapter(Activity activity, List<HourForecast> hourForecasts) {
+        this.mActivityWeakReference = new WeakReference<>(activity);
         this.mHourForecastList = hourForecasts;
     }
 
     @Override
-    public int getCount() {
-        return mHourForecastList.size();
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mActivityWeakReference.get()).inflate(R.layout.itme_rv_hourforecast, parent, false);
+        ViewHolder viewHolder = new ViewHolder(view);
+        return viewHolder;
     }
 
     @Override
-    public Object getItem(int position) {
-        return position;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        final ViewHolder viewHolder;
-        if (convertView == null) {
-            viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.itme_lv_hourforecast, null);
-            viewHolder.TvTime = (TextView) convertView.findViewById(R.id.hourforecast_tv_time);
-            viewHolder.IvSky = (ImageView) convertView.findViewById(R.id.hourforecast_iv_sky);
-            viewHolder.TvTemperature = (TextView) convertView.findViewById(R.id.hourforecast_tv_temperature);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-        viewHolder.TvTime.setText(mHourForecastList.get(position).getTime().substring(10));
-        new Thread(new Runnable() {
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        HourForecast hourForecast = mHourForecastList.get(position);
+        holder.mTvTemperature.setText(hourForecast.getTemperature());
+        holder.mTvTime.setText(hourForecast.getTime().substring(10));
+        RequestQueue requestQueue = Volley.newRequestQueue(mActivityWeakReference.get());
+        ImageLoader imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
             @Override
-            public void run() {
-                Bitmap bitmap = HttpUtil.downloadPic(ICON_ADDRESS + mHourForecastList.get(position).getSky() + ".png");
-                new UpdateImageViewTask(bitmap, viewHolder.IvSky).execute();
+            public Bitmap getBitmap(String s) {
+                return null;
             }
-        }).start();
-        viewHolder.TvTemperature.setText(mHourForecastList.get(position).getTemperature());
-        return convertView;
+
+            @Override
+            public void putBitmap(String s, Bitmap bitmap) {
+
+            }
+        });
+        holder.mNivSky.setImageUrl(ICON_ADDRESS + hourForecast.getSky() + ".png", imageLoader);
     }
 
-    private static class ViewHolder {
-        TextView TvTime;
-        ImageView IvSky;
-        TextView TvTemperature;
+    @Override
+    public int getItemCount() {
+        return mHourForecastList.size();
     }
 }

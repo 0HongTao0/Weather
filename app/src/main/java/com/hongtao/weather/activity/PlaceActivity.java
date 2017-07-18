@@ -1,10 +1,10 @@
 package com.hongtao.weather.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -60,15 +60,16 @@ public class PlaceActivity extends AppCompatActivity {
         }
     };
 
+    public static void startPlaceActivity(Activity activity) {
+        Intent intent = new Intent(activity, PlaceActivity.class);
+        activity.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-        LvPlace = (ListView) findViewById(R.id.weatheractivity_lv_place);
+        LvPlace = (ListView) findViewById(R.id.place_lv_place_list);
         showProvince(PLACE_ADDRESS);
         LvPlace.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -86,7 +87,7 @@ public class PlaceActivity extends AppCompatActivity {
                         break;
                     case TYPE_DISTRICT:
                         Intent intent = new Intent();
-                        intent.putExtra("weatherId", mDistricts.get(position).getWeather_id());
+                        intent.putExtra("weatherId", mDistricts.get(position).getWeatherId());
                         setResult(RESULT_OK, intent);
                         finish();
                         break;
@@ -134,7 +135,7 @@ public class PlaceActivity extends AppCompatActivity {
                         District district = new District();
                         district.setId(jsonObject.getString("id"));
                         district.setName(jsonObject.getString("name"));
-                        district.setWeather_id(jsonObject.getString("weather_id"));
+                        district.setWeatherId(jsonObject.getString("weather_id"));
                         districts.add(district);
                     } catch (JSONException e) {
                         e.printStackTrace();
