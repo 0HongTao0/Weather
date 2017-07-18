@@ -124,8 +124,6 @@ public class WeatherActivity extends AppCompatActivity {
         mBtChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(WeatherActivity.this, PlaceActivity.class);
-//                startActivityForResult(intent, 1);
                 Intent intent = new Intent(WeatherActivity.this, ChoosePlaceActivity.class);
                 startActivity(intent);
             }

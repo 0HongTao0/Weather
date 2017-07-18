@@ -1,7 +1,10 @@
 package com.hongtao.weather.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
@@ -10,6 +13,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.hongtao.weather.DateBase.PlaceDatabaseDeal;
 import com.hongtao.weather.R;
+import com.hongtao.weather.adapter.AdapterCallBack;
+import com.hongtao.weather.adapter.ChoosePlaceAdapter;
 import com.hongtao.weather.bean.City;
 import com.hongtao.weather.bean.District;
 import com.hongtao.weather.bean.Place;
@@ -26,6 +31,7 @@ import java.util.List;
  */
 public class ChoosePlaceActivity extends AppCompatActivity {
     private final static String PLACE_ADDRESS = "http://guolin.tech/api/china";
+    private RecyclerView mRvCityName;
     private List<Province> mProvinceList;
     private List<Place> mPlaceList = new ArrayList<>();
 
@@ -34,17 +40,32 @@ public class ChoosePlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_place);
+        mRvCityName = (RecyclerView) findViewById(R.id.choose_place_rv_list);
         savePlaceInDatabase();
+        List<Place> placeList = PlaceDatabaseDeal.searchPlaceByAboveId("0");
+        final ChoosePlaceAdapter adapter = new ChoosePlaceAdapter(ChoosePlaceActivity.this, placeList, new AdapterCallBack() {
+            @Override
+            public void callBackPlace(Place place) {
+                if (place.getWeatherId().equals("0")) {
+                    final ChoosePlaceAdapter choosePlaceAdapter = (ChoosePlaceAdapter) mRvCityName.getAdapter();
+                    mPlaceList.clear();
+                    mPlaceList = PlaceDatabaseDeal.searchPlaceByAboveId(place.getId());
+                    choosePlaceAdapter.setPlaceList(mPlaceList);
+                    choosePlaceAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+        LinearLayoutManager manager = new LinearLayoutManager(ChoosePlaceActivity.this);
+        mRvCityName.setLayoutManager(manager);
+        mRvCityName.setAdapter(adapter);
     }
 
     private void savePlaceInDatabase() {
         RequestQueue queue = Volley.newRequestQueue(ChoosePlaceActivity.this);
         saveProvinceInDatabase(queue);
-//        saveCityInDatabase(queue);
-//        saveDistrictInDatabase(queue);
     }
 
-    private void saveProvinceInDatabase(RequestQueue queue) {
+    private void saveProvinceInDatabase(final RequestQueue queue) {
         GsonRequest<Province> request = new GsonRequest<>(PLACE_ADDRESS, Province.class, new Response.Listener<List<Province>>() {
             @Override
             public void onResponse(List<Province> provinces) {
@@ -59,6 +80,7 @@ public class ChoosePlaceActivity extends AppCompatActivity {
                     placeList.add(place);
                 }
                 PlaceDatabaseDeal.addPlace(placeList);
+                saveCityInDatabase(queue);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -69,7 +91,7 @@ public class ChoosePlaceActivity extends AppCompatActivity {
         queue.add(request);
     }
 
-    private void saveCityInDatabase(RequestQueue queue) {
+    private void saveCityInDatabase(final RequestQueue queue) {
         for (int i = 0; i < mProvinceList.size(); i++) {
             final Province province = mProvinceList.get(i);
             GsonRequest<City> request = new GsonRequest<>(PLACE_ADDRESS + "/" + province.getId(), City.class, new Response.Listener<List<City>>() {
@@ -94,10 +116,12 @@ public class ChoosePlaceActivity extends AppCompatActivity {
             });
             queue.add(request);
         }
+        saveDistrictInDatabase(queue);
     }
 
     private void saveDistrictInDatabase(RequestQueue queue) {
         for (int i = 0; i < mPlaceList.size(); i++) {
+
             final Place place = mPlaceList.get(i);
             GsonRequest<District> request = new GsonRequest<>(PLACE_ADDRESS + "/" + place.getAboveId() + "/" + place.getId(), District.class, new Response.Listener<List<District>>() {
                 @Override
@@ -121,6 +145,7 @@ public class ChoosePlaceActivity extends AppCompatActivity {
                 }
             });
             queue.add(request);
+
         }
     }
 }

@@ -3,6 +3,9 @@ package com.hongtao.weather.DateBase;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
+
+import com.hongtao.weather.util.ContextUtil;
 
 
 /**
@@ -13,7 +16,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class PlaceDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_PLACE = "create table Place (" +
-            "id varchar primary key," +
+            "id text," +
             "above_id text," +
             "name text," +
             "weather_id text)";
@@ -24,6 +27,7 @@ public class PlaceDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Toast.makeText(ContextUtil.getContext(),"66666666666",Toast.LENGTH_SHORT).show();
         db.execSQL(CREATE_PLACE);
     }
 

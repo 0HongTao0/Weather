@@ -1,11 +1,13 @@
 package com.hongtao.weather.DateBase;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.hongtao.weather.util.ContextUtil;
 import com.hongtao.weather.bean.Place;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,4 +31,47 @@ public class PlaceDatabaseDeal {
         }
     }
 
+    public static List<Place> searchPlaceById(String id) {
+        List<Place> placeList = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from Place where id = ?", new String[]{id});
+        if (cursor.moveToNext()) {
+            do {
+                Place place = new Place();
+                place.setName(cursor.getString(cursor.getColumnIndex("name")));
+                place.setId(cursor.getString(cursor.getColumnIndex("id")));
+                place.setAboveId(cursor.getString(cursor.getColumnIndex("above_id")));
+                place.setWeatherId(cursor.getString(cursor.getColumnIndex("weather_id")));
+                placeList.add(place);
+            } while (cursor.moveToNext());
+        }
+        return placeList;
+    }
+
+    public static List<Place> searchPlaceByAboveId(String id) {
+        List<Place> placeList = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from Place where above_id = ?", new String[]{id});
+        if (cursor.moveToNext()) {
+            do {
+                Place place = new Place();
+                place.setName(cursor.getString(cursor.getColumnIndex("name")));
+                place.setId(cursor.getString(cursor.getColumnIndex("id")));
+                place.setAboveId(cursor.getString(cursor.getColumnIndex("above_id")));
+                place.setWeatherId(cursor.getString(cursor.getColumnIndex("weather_id")));
+                placeList.add(place);
+            } while (cursor.moveToNext());
+        }
+        return placeList;
+    }
+
+    public static Boolean isTableExit() {
+        Cursor cursor = db.rawQuery("select * from Place", null);
+        if (cursor.moveToNext()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static void clearTable() {
+        db.execSQL("drop table Place");
+    }
 }
