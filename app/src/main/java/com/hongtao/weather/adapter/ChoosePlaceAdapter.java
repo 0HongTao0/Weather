@@ -2,16 +2,21 @@ package com.hongtao.weather.adapter;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hongtao.weather.R;
+import com.hongtao.weather.activity.WeatherApplication;
 import com.hongtao.weather.bean.Place;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * author：hongtao on 2017/7/18/018 20:03
@@ -42,21 +47,23 @@ public class ChoosePlaceAdapter extends RecyclerView.Adapter<ChoosePlaceAdapter.
     public ChoosePlaceAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mActivityWeakReference.get()).inflate(R.layout.item_rv_place, parent, false);
         final ViewHolder viewHolder = new ViewHolder(view);
-        viewHolder.mTvCityName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = viewHolder.getAdapterPosition();
-                Place place = mPlaceList.get(position);
-                mAdapterCallBack.callBackPlace(place);
-            }
-        });
+
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ChoosePlaceAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final ChoosePlaceAdapter.ViewHolder holder, int position) {
         Place place = mPlaceList.get(position);
         holder.mTvCityName.setText(place.getName());
+        holder.mTvCityName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                Place place = mPlaceList.get(position);
+                mAdapterCallBack.callBackPlace(place);
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

@@ -10,6 +10,15 @@ public class Place {
     private String name;
     private String aboveId;
     private String weatherId;
+    private String placeType;
+
+    public String getPlaceType() {
+        return placeType;
+    }
+
+    public void setPlaceType(String placeType) {
+        this.placeType = placeType;
+    }
 
     public String getId() {
         return id;

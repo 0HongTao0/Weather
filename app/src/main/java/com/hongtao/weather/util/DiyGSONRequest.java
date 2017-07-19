@@ -19,23 +19,24 @@ import java.util.List;
  * email：935245421@qq.com
  * mobile：18306620711
  */
-public class GsonRequest<T> extends Request<T> {
+public class DiyGSONRequest<T> extends Request<T> {
     private final Response.Listener<List<T>> mListener;
     private Class<T> mClass;
 
-    public GsonRequest(int method, String url, Class<T> clazz, Response.Listener<List<T>> listener, Response.ErrorListener errorListener) {
+    public DiyGSONRequest(int method, String url, Class<T> clazz, Response.Listener<List<T>> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         mClass = clazz;
         mListener = listener;
     }
 
-    public GsonRequest(String url, Class<T> clazz, Response.Listener<List<T>> listener, Response.ErrorListener errorListener) {
+    public DiyGSONRequest(String url, Class<T> clazz, Response.Listener<List<T>> listener, Response.ErrorListener errorListener) {
         this(Method.GET, url, clazz, listener, errorListener);
     }
 
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse networkResponse) {
-        String jsonData = null;
+        String jsonData;
+
         try {
             jsonData = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
             List<T> list = new ArrayList<>();
@@ -47,7 +48,6 @@ public class GsonRequest<T> extends Request<T> {
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         }
-
     }
 
     @Override

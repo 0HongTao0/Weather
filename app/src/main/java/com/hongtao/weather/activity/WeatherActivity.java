@@ -125,7 +125,7 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WeatherActivity.this, ChoosePlaceActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
