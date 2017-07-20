@@ -12,11 +12,4 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <Button
-        android:id="@+id/choose_place_bt_back"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:text="@string/button_back"/>
-
 </LinearLayout>

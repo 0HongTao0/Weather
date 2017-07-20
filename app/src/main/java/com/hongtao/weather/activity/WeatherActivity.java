@@ -35,6 +35,7 @@ import com.hongtao.weather.bean.HourForecast;
 import com.hongtao.weather.bean.NowWeather;
 import com.hongtao.weather.bean.Weather;
 import com.hongtao.weather.service.ShowService;
+import com.hongtao.weather.util.DividerItemDecoration;
 import com.hongtao.weather.util.HandlerUtil;
 import com.hongtao.weather.util.HttpUtil;
 import com.hongtao.weather.util.NetwordUtil;
@@ -93,12 +94,14 @@ public class WeatherActivity extends AppCompatActivity {
                     DailyForecastAdapter dailyForecastAdapter = new DailyForecastAdapter(WeatherActivity.this, (List<DailyForecast>) msg.obj);
                     LinearLayoutManager dailyLayoutManager = new LinearLayoutManager(WeatherActivity.this);
                     mRvDailyForecast.setLayoutManager(dailyLayoutManager);
+                    mRvDailyForecast.addItemDecoration(new DividerItemDecoration(WeatherActivity.this, DividerItemDecoration.VERTICAL_LIST));
                     mRvDailyForecast.setAdapter(dailyForecastAdapter);
                     break;
                 case UPDATE_WEATHER_HOURFORECAST:
                     HourForecastAdapter hourForecastAdapter = new HourForecastAdapter(WeatherActivity.this, (List<HourForecast>) msg.obj);
                     LinearLayoutManager hourLayoutManager = new LinearLayoutManager(WeatherActivity.this);
                     mRvHourForecast.setLayoutManager(hourLayoutManager);
+                    mRvHourForecast.addItemDecoration(new DividerItemDecoration(WeatherActivity.this, DividerItemDecoration.VERTICAL_LIST));
                     mRvHourForecast.setAdapter(hourForecastAdapter);
                     break;
             }

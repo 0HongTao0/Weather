@@ -10,7 +10,6 @@ import android.widget.Toast;
 import com.hongtao.weather.R;
 import com.hongtao.weather.activity.WeatherApplication;
 import com.hongtao.weather.bean.Place;
-import com.hongtao.weather.bean.Weather;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,59 +27,48 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView mTvCityName;
 
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView) {
             super(itemView);
-            mTvCityName = (TextView) itemView.findViewById(R.id.listviewitem_tv_place);
+            mTvCityName = (TextView) itemView.findViewById(R.id.place_tv_place);
         }
     }
 
     public PlaceAdapter(List<Place> places) {
         this.mPlaceList = places;
-        notifyDataSetChanged();
     }
 
     @Override
     public PlaceAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rv_place, parent, false);
-        final ViewHolder viewHolder = new ViewHolder(view);
+        ViewHolder viewHolder = new ViewHolder(view);
 
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final PlaceAdapter.ViewHolder holder, int position) {
-        Place place = mPlaceList.get(position);
-        holder.mTvCityName.setText(place.getName());
+    public void onBindViewHolder(final PlaceAdapter.ViewHolder holder, final int position) {
+        holder.mTvCityName.setText(mPlaceList.get(position).getName());
         holder.mTvCityName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = holder.getAdapterPosition();
-                Place place = mPlaceList.get(position);
-                if (mAdapterCallBack != null) {
-                    mAdapterCallBack.onClickCallBackPlace(place);
-                }
-                Toast.makeText(WeatherApplication.getContext(), "5555555555555", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WeatherApplication.getContext(), "5555555555", Toast.LENGTH_SHORT).show();
+                mAdapterCallBack.onClickCallBackPlace(mPlaceList.get(position));
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mPlaceList == null ? 0 : mPlaceList.size();
+        return mPlaceList.size();
     }
 
     public void setPlaceList(List<Place> placeList) {
         mPlaceList.clear();
-        mPlaceList.addAll(placeList);
-        notifyDataSetChanged();
+        mPlaceList = placeList;
     }
 
     public interface ItemOnClickCallBackListener {
         void onClickCallBackPlace(Place place);
-    }
-
-    public ItemOnClickCallBackListener getAdapterCallBack() {
-        return mAdapterCallBack;
     }
 
     public void setAdapterCallBack(ItemOnClickCallBackListener adapterCallBack) {

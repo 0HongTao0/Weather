@@ -16,9 +16,9 @@ import com.hongtao.weather.bean.City;
 import com.hongtao.weather.bean.District;
 import com.hongtao.weather.bean.Place;
 import com.hongtao.weather.bean.Province;
+import com.hongtao.weather.util.DividerItemDecoration;
 import com.hongtao.weather.util.DiyGSONRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +32,7 @@ public class PlaceActivity extends AppCompatActivity {
     private final static String PLACE_TYPE_CITY = "City";
     private final static String PLACE_TYPE_DISTRICT = "District";
     private RecyclerView mRvCityName;
+    private List<Place> placeList;
     private PlaceAdapter mChoosePlaceAdapter;
 
 
@@ -40,10 +41,12 @@ public class PlaceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_place);
         mRvCityName = (RecyclerView) findViewById(R.id.choose_place_rv_list);
+        mRvCityName.addItemDecoration(new DividerItemDecoration(PlaceActivity.this, DividerItemDecoration.VERTICAL_LIST));
+
         if (!PlaceDatabaseDeal.isTableExit()) {
             saveProvinceInDatabase();
         }
-        List<Place> placeList = PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE);
+        placeList = PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE);
         mChoosePlaceAdapter = new PlaceAdapter(placeList);
         LinearLayoutManager manager = new LinearLayoutManager(PlaceActivity.this);
         mRvCityName.setLayoutManager(manager);
@@ -51,43 +54,42 @@ public class PlaceActivity extends AppCompatActivity {
         try {
             mChoosePlaceAdapter.setAdapterCallBack(new PlaceAdapter.ItemOnClickCallBackListener() {
                 @Override
-                public void onClickCallBackPlace(final Place place) {
-                    final PlaceAdapter choosePlaceAdapter = (PlaceAdapter) mRvCityName.getAdapter();
-                    switch (place.getPlaceType()) {
+                public void onClickCallBackPlace(Place place) {
+                    if (PLACE_TYPE_PROVINCE.equals(place.getPlaceType())) {
 
-                        case PLACE_TYPE_PROVINCE:
-                            if (!PlaceDatabaseDeal.isPlaceExit(place.getId(), PLACE_TYPE_CITY)) {
-                                saveCityInDatabase(place);
-                            }
-                            choosePlaceAdapter.setPlaceList(PlaceDatabaseDeal.searchPlaceByAboveId(place.getId()));
-                            break;
+                        if (!PlaceDatabaseDeal.isPlaceExit(place.getId(), PLACE_TYPE_CITY)) {
+                            saveCityInDatabase(place);
+                        }
+                        mChoosePlaceAdapter.setPlaceList(PlaceDatabaseDeal.searchPlaceByAboveId(place.getId()));
+                        mChoosePlaceAdapter.notifyDataSetChanged();
+                    }
+                    if (PLACE_TYPE_CITY.equals(place.getPlaceType())) {
+                        if (!PlaceDatabaseDeal.isPlaceExit(place.getId(), PLACE_TYPE_DISTRICT)) {
+                            saveDistrictInDatabase(place);
+                        }
+                        mChoosePlaceAdapter.setPlaceList(PlaceDatabaseDeal.searchPlaceByAboveId(place.getId()));
+                        mChoosePlaceAdapter.notifyDataSetChanged();
 
-                        case PLACE_TYPE_CITY:
-                            if (!PlaceDatabaseDeal.isPlaceExit(place.getId(), PLACE_TYPE_DISTRICT)) {
-                                saveDistrictInDatabase(place);
-                            }
-                            choosePlaceAdapter.setPlaceList(PlaceDatabaseDeal.searchPlaceByAboveId(place.getId()));
-                            break;
-
-                        case PLACE_TYPE_DISTRICT:
-                            Intent intent = new Intent();
-                            intent.putExtra("weatherId", place.getWeatherId());
-                            setResult(RESULT_OK, intent);
-                            finish();
-                            break;
+                    }
+                    if (PLACE_TYPE_DISTRICT.equals(place.getPlaceType())) {
+                        Intent intent = new Intent();
+                        intent.putExtra("weatherId", place.getWeatherId());
+                        setResult(RESULT_OK, intent);
+                        finish();
                     }
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void saveProvinceInDatabase() {
         DiyGSONRequest<Province> request = new DiyGSONRequest<>(PLACE_ADDRESS, Province.class, new Response.Listener<List<Province>>() {
             @Override
             public void onResponse(List<Province> provinces) {
-                List<Place> placeList = new ArrayList<>();
+                placeList.clear();
                 for (int i = 0; i < provinces.size(); i++) {
                     Place place = new Place();
                     place.setAboveId("nothing");
@@ -113,7 +115,7 @@ public class PlaceActivity extends AppCompatActivity {
         DiyGSONRequest<City> request = new DiyGSONRequest<>(PLACE_ADDRESS + "/" + place.getId(), City.class, new Response.Listener<List<City>>() {
             @Override
             public void onResponse(List<City> cities) {
-                List<Place> placeList = new ArrayList<>();
+                placeList.clear();
                 for (int i = 0; i < cities.size(); i++) {
                     Place place = new Place();
                     place.setAboveId(aboveId);
@@ -140,8 +142,7 @@ public class PlaceActivity extends AppCompatActivity {
         DiyGSONRequest<District> request = new DiyGSONRequest<>(address.toString(), District.class, new Response.Listener<List<District>>() {
             @Override
             public void onResponse(List<District> districts) {
-                List<Place> placeList = new ArrayList<>();
-
+                placeList.clear();
                 for (int i = 0; i < districts.size(); i++) {
                     Place place = new Place();
                     place.setAboveId(aboveId);
