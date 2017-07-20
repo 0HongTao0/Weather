@@ -8,8 +8,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/choose_place_rv_list"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
 
     </android.support.v7.widget.RecyclerView>
 

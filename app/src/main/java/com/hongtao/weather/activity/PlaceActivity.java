@@ -2,7 +2,6 @@ package com.hongtao.weather.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.hongtao.weather.DateBase.PlaceDatabaseDeal;
 import com.hongtao.weather.R;
-import com.hongtao.weather.adapter.AdapterCallBack;
-import com.hongtao.weather.adapter.ChoosePlaceAdapter;
+import com.hongtao.weather.adapter.PlaceAdapter;
 import com.hongtao.weather.bean.City;
 import com.hongtao.weather.bean.District;
 import com.hongtao.weather.bean.Place;
@@ -28,14 +26,13 @@ import java.util.List;
  * email：935245421@qq.com
  * mobile：18306620711
  */
-public class ChoosePlaceActivity extends AppCompatActivity {
+public class PlaceActivity extends AppCompatActivity {
     private final static String PLACE_ADDRESS = "http://guolin.tech/api/china";
     private final static String PLACE_TYPE_PROVINCE = "Province";
     private final static String PLACE_TYPE_CITY = "City";
     private final static String PLACE_TYPE_DISTRICT = "District";
     private RecyclerView mRvCityName;
-    private Handler mHandler = new Handler();
-    private ChoosePlaceAdapter mChoosePlaceAdapter;
+    private PlaceAdapter mChoosePlaceAdapter;
 
 
     @Override
@@ -47,41 +44,43 @@ public class ChoosePlaceActivity extends AppCompatActivity {
             saveProvinceInDatabase();
         }
         List<Place> placeList = PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE);
-        mChoosePlaceAdapter = new ChoosePlaceAdapter(ChoosePlaceActivity.this, placeList, new AdapterCallBack() {
-            @Override
-            public void callBackPlace(Place place) {
-                ChoosePlaceAdapter choosePlaceAdapter = (ChoosePlaceAdapter) mRvCityName.getAdapter();
-                choosePlaceAdapter.getPlaceList().clear();
-                switch (place.getPlaceType()) {
-
-                    case PLACE_TYPE_PROVINCE:
-                        if (!PlaceDatabaseDeal.isPlaceExit(place.getId(), PLACE_TYPE_CITY)) {
-                            saveCityInDatabase(place);
-                        }
-                        choosePlaceAdapter.setPlaceList(PlaceDatabaseDeal.searchPlaceByAboveId(place.getId()));
-                        choosePlaceAdapter.notifyDataSetChanged();
-                        break;
-
-                    case PLACE_TYPE_CITY:
-                        if (!PlaceDatabaseDeal.isPlaceExit(place.getId(), PLACE_TYPE_DISTRICT)) {
-                            saveDistrictInDatabase(place);
-                        }
-                        choosePlaceAdapter.setPlaceList(PlaceDatabaseDeal.searchPlaceByAboveId(place.getId()));
-                        choosePlaceAdapter.notifyDataSetChanged();
-                        break;
-
-                    case PLACE_TYPE_DISTRICT:
-                        Intent intent = new Intent();
-                        intent.putExtra("weatherId", place.getWeatherId());
-                        setResult(RESULT_OK, intent);
-                        finish();
-                        break;
-                }
-            }
-        });
-        LinearLayoutManager manager = new LinearLayoutManager(ChoosePlaceActivity.this);
+        mChoosePlaceAdapter = new PlaceAdapter(placeList);
+        LinearLayoutManager manager = new LinearLayoutManager(PlaceActivity.this);
         mRvCityName.setLayoutManager(manager);
         mRvCityName.setAdapter(mChoosePlaceAdapter);
+        try {
+            mChoosePlaceAdapter.setAdapterCallBack(new PlaceAdapter.ItemOnClickCallBackListener() {
+                @Override
+                public void onClickCallBackPlace(final Place place) {
+                    final PlaceAdapter choosePlaceAdapter = (PlaceAdapter) mRvCityName.getAdapter();
+                    switch (place.getPlaceType()) {
+
+                        case PLACE_TYPE_PROVINCE:
+                            if (!PlaceDatabaseDeal.isPlaceExit(place.getId(), PLACE_TYPE_CITY)) {
+                                saveCityInDatabase(place);
+                            }
+                            choosePlaceAdapter.setPlaceList(PlaceDatabaseDeal.searchPlaceByAboveId(place.getId()));
+                            break;
+
+                        case PLACE_TYPE_CITY:
+                            if (!PlaceDatabaseDeal.isPlaceExit(place.getId(), PLACE_TYPE_DISTRICT)) {
+                                saveDistrictInDatabase(place);
+                            }
+                            choosePlaceAdapter.setPlaceList(PlaceDatabaseDeal.searchPlaceByAboveId(place.getId()));
+                            break;
+
+                        case PLACE_TYPE_DISTRICT:
+                            Intent intent = new Intent();
+                            intent.putExtra("weatherId", place.getWeatherId());
+                            setResult(RESULT_OK, intent);
+                            finish();
+                            break;
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void saveProvinceInDatabase() {
@@ -161,5 +160,13 @@ public class ChoosePlaceActivity extends AppCompatActivity {
             }
         });
         WeatherApplication.getRequestQueue().add(request);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("weatherId", "CN101280101");
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }

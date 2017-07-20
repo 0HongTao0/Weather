@@ -5,34 +5,39 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.hongtao.weather.R;
 import com.hongtao.weather.adapter.DailyForecastAdapter;
 import com.hongtao.weather.adapter.HourForecastAdapter;
 import com.hongtao.weather.bean.DailyForecast;
 import com.hongtao.weather.bean.HourForecast;
 import com.hongtao.weather.bean.NowWeather;
+import com.hongtao.weather.bean.Weather;
 import com.hongtao.weather.service.ShowService;
 import com.hongtao.weather.util.HandlerUtil;
 import com.hongtao.weather.util.HttpUtil;
+import com.hongtao.weather.util.NetwordUtil;
 import com.hongtao.weather.util.ParseUtil;
 
 import org.json.JSONArray;
@@ -111,49 +116,54 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         initView();
+        if (NetwordUtil.netIsWork(WeatherActivity.this)) {
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    showWeather(nowWeatherId);
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    Toast.makeText(WeatherActivity.this, "已经更新天气状况", Toast.LENGTH_SHORT).show();
+                }
+            });
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                showWeather(nowWeatherId);
-                mSwipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(WeatherActivity.this, "已经更新天气状况", Toast.LENGTH_SHORT).show();
-            }
-        });
+            mBtChoose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(WeatherActivity.this, PlaceActivity.class);
+                    startActivityForResult(intent, 1);
+                }
+            });
 
-        mBtChoose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(WeatherActivity.this, ChoosePlaceActivity.class);
-                startActivityForResult(intent, 1);
-            }
-        });
-
-        IntentFilter mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction("com.weather.update");
-        mReceiver = new UpdateStatusReceiver();
-        registerReceiver(mReceiver, mIntentFilter);
-        showWeather(nowWeatherId);
+            IntentFilter mIntentFilter = new IntentFilter();
+            mIntentFilter.addAction("com.weather.update");
+            mReceiver = new UpdateStatusReceiver();
+            registerReceiver(mReceiver, mIntentFilter);
+            showWeather(nowWeatherId);
+        } else {
+            NowWeather nowWeather = getNowWeatherFromSP();
+            HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
+        }
     }
 
     private void showWeather(final String weatherId) {
-        new Thread(new Runnable() {
+        StringRequest stringRequest = new StringRequest(WEATHER_ADDRESS + weatherId + WEATHER_KEY, new Response.Listener<String>() {
             @Override
-            public void run() {
-                String jsonData = HttpUtil.sendRequest(WEATHER_ADDRESS + weatherId + WEATHER_KEY);
-                try {
-                    JSONObject jsonObject = ParseUtil.parseJSONForJSONObject(jsonData);
-                    JSONArray weather = jsonObject.getJSONArray("HeWeather");
-                    jsonObject = ParseUtil.parseJSONForJSONObject(weather.getJSONObject(0).toString());
-                    showNowWeather(jsonObject);
-                    showHourForecastWeather(jsonObject);
-                    showDailyForecastWeather(jsonObject);
-                    updateNotification(jsonObject);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            public void onResponse(String s) {
+                Gson gson = new Gson();
+                Weather weather = gson.fromJson(s, Weather.class);
+                showNowWeather(weather);
+                showHourForecastWeather(weather);
+                showDailyForecastWeather(weather);
+                updateNotification(weather);
             }
-        }).start();
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+            }
+        });
+        WeatherApplication.getRequestQueue().add(stringRequest);
+
     }
 
     @Override
@@ -194,74 +204,77 @@ public class WeatherActivity extends AppCompatActivity {
         mNivNowSky = (NetworkImageView) findViewById(R.id.now_iv_niv_sky);
     }
 
-    private void showNowWeather(JSONObject jsonObject) {
-        try {
-            final NowWeather nowWeather = new NowWeather();
-            nowWeather.setCity(jsonObject.getJSONObject("basic").getString("city"));
-            nowWeather.setTemperature(jsonObject.getJSONObject("now").getString("tmp") + "°");
-            nowWeather.setSky(jsonObject.getJSONObject("now").getJSONObject("cond").getString("code"));
-            nowWeather.setWindDirection(jsonObject.getJSONObject("now").getJSONObject("wind").getString("dir"));
-            if (jsonObject.isNull("aqi")) {
-                nowWeather.setAir("暂无空气质量状况");
-            } else {
-                nowWeather.setAir("空气质量" + jsonObject.getJSONObject("aqi").getJSONObject("city").getString("qlty"));
-            }
-            HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    private void showNowWeather(Weather weather) {
+        NowWeather nowWeather = new NowWeather();
+        nowWeather.setCity(weather.getHeWeather().get(0).getBasic().getCity());
+        nowWeather.setTemperature(weather.getHeWeather().get(0).getNow().getTemperature());
+        nowWeather.setSky(weather.getHeWeather().get(0).getNow().getCond().getCode());
+        nowWeather.setWindDirection(weather.getHeWeather().get(0).getNow().getWind().getWindDirection());
+        nowWeather.setAir(weather.getHeWeather().get(0).getAqi().getCity().getQlty());
+        saveNowWeatherInSP(nowWeather);
+        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
     }
 
-    private void showHourForecastWeather(JSONObject jsonObject) {
+    private void saveNowWeatherInSP(NowWeather nowWeather) {
+        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+        editor.putString("now_weather_city", nowWeather.getCity());
+        editor.putString("now_weather_temperature", nowWeather.getTemperature());
+        editor.putString("now_weather_sky", nowWeather.getSky());
+        editor.putString("now_weather_wind_direction", nowWeather.getWindDirection());
+        editor.putString("now_weather_air", nowWeather.getAir());
+        editor.apply();
+    }
+
+    private NowWeather getNowWeatherFromSP() {
+        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        NowWeather nowWeather = new NowWeather();
+        nowWeather.setCity(sharedPreferences.getString("now_weather_city", ""));
+        nowWeather.setTemperature(sharedPreferences.getString("now_weather_temperature", ""));
+        nowWeather.setSky(sharedPreferences.getString("now_weather_sky", ""));
+        nowWeather.setWindDirection(sharedPreferences.getString("now_weather_wind_direction", ""));
+        nowWeather.setAir(sharedPreferences.getString("now_weather_air", ""));
+        return nowWeather;
+    }
+
+    private void showHourForecastWeather(Weather weather) {
         List<HourForecast> hourForecasts = new ArrayList<>();
-        try {
-            for (int i = 0; i < jsonObject.getJSONArray("hourly_forecast").length(); i++) {
-                HourForecast hourForecast = new HourForecast();
-                hourForecast.setTime(jsonObject.getJSONArray("hourly_forecast").getJSONObject(i).getString("date"));
-                hourForecast.setSky(jsonObject.getJSONArray("hourly_forecast").getJSONObject(i).getJSONObject("cond").getString("code"));
-                hourForecast.setTemperature(jsonObject.getJSONArray("hourly_forecast").getJSONObject(i).getString("tmp") + "°");
-                hourForecasts.add(hourForecast);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        for (int i = 0; i < weather.getHeWeather().get(0).getHourlyForecast().size(); i++) {
+            HourForecast hourForecast = new HourForecast();
+            hourForecast.setTime(weather.getHeWeather().get(0).getHourlyForecast().get(i).getDate());
+            hourForecast.setSky(weather.getHeWeather().get(0).getHourlyForecast().get(i).getCond().getCode());
+            hourForecast.setTemperature(weather.getHeWeather().get(0).getHourlyForecast().get(i).getTemperature() + "°");
+            hourForecasts.add(hourForecast);
         }
         HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_HOURFORECAST, hourForecasts);
     }
 
-    private void showDailyForecastWeather(JSONObject jsonObject) {
+    private void showDailyForecastWeather(Weather weather) {
         List<DailyForecast> dailyForecastList = new ArrayList<>();
-        try {
-            for (int i = 0; i < jsonObject.getJSONArray("daily_forecast").length(); i++) {
-                DailyForecast dailyForecast = new DailyForecast();
-                dailyForecast.setDate(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getString("date"));
-                dailyForecast.setDaySky(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("cond").getString("code_d"));
-                dailyForecast.setNightSky(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("cond").getString("code_n"));
-                dailyForecast.setTemperature(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("tmp").getString("max") + "°~" + jsonObject.getJSONArray("daily_forecast").getJSONObject(0).getJSONObject("tmp").getString("min") + "°");
-                dailyForecast.setWindDirection(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("wind").getString("dir"));
-                dailyForecast.setWindSpeed(jsonObject.getJSONArray("daily_forecast").getJSONObject(i).getJSONObject("wind").getString("spd") + "km/h");
-                dailyForecastList.add(dailyForecast);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+
+        for (int i = 0; i < weather.getHeWeather().get(0).getDailyForecast().size(); i++) {
+            DailyForecast dailyForecast = new DailyForecast();
+            dailyForecast.setDate(weather.getHeWeather().get(0).getDailyForecast().get(i).getDate());
+            dailyForecast.setDaySky(weather.getHeWeather().get(0).getDailyForecast().get(i).getCond().getCodeDay());
+            dailyForecast.setNightSky(weather.getHeWeather().get(0).getDailyForecast().get(i).getCond().getCodeNight());
+            dailyForecast.setTemperature(weather.getHeWeather().get(0).getDailyForecast().get(i).getTmp().getMinTemperature() + "°~" + weather.getHeWeather().get(0).getDailyForecast().get(i).getTmp().getMaxTemperature() + "°");
+            dailyForecast.setWindDirection(weather.getHeWeather().get(0).getDailyForecast().get(i).getWind().getWindDirection());
+            dailyForecast.setWindSpeed(weather.getHeWeather().get(0).getDailyForecast().get(i).getWind().getWindSpeed() + "km/h");
+            dailyForecastList.add(dailyForecast);
         }
         HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_DAILYFORECAST, dailyForecastList);
     }
 
-    private void updateNotification(JSONObject jsonObject) {
-        try {
-            List<String> msgList = new ArrayList<>();
-            msgList.add(jsonObject.getJSONObject("basic").getString("city"));
-            msgList.add("温度" + jsonObject.getJSONObject("now").getString("tmp") + "°/" +
-                    jsonObject.getJSONObject("now").getJSONObject("cond").getString("txt") + "/" +
-                    jsonObject.getJSONObject("now").getJSONObject("wind").getString("dir") + "/" +
-                    "风速" + jsonObject.getJSONObject("now").getJSONObject("wind").getString("spd") + "km/h");
-            msgList.add(ICON_ADDRESS + jsonObject.getJSONObject("now").getJSONObject("cond").getString("code") + ".png");
+    private void updateNotification(Weather weather) {
+        List<String> msgList = new ArrayList<>();
+        msgList.add(weather.getHeWeather().get(0).getBasic().getCity());
+        msgList.add("温度" + weather.getHeWeather().get(0).getNow().getTemperature() + "°/" +
+                weather.getHeWeather().get(0).getNow().getWind().getWindDirection() + "/" +
+                "风速" + weather.getHeWeather().get(0).getNow().getWind().getWindSpeed() + "km/h");
+        msgList.add(ICON_ADDRESS + weather.getHeWeather().get(0).getNow().getCond().getCode() + ".png");
 
-            Intent bindIntent = new Intent(WeatherActivity.this, ShowService.class);
-            bindIntent.putStringArrayListExtra("List", (ArrayList<String>) msgList);
-            startService(bindIntent);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        Intent bindIntent = new Intent(WeatherActivity.this, ShowService.class);
+        bindIntent.putStringArrayListExtra("List", (ArrayList<String>) msgList);
+        startService(bindIntent);
+
     }
 }
