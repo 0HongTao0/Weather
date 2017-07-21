@@ -58,6 +58,7 @@ public class PlaceDatabaseDeal {
                 place.setId(cursor.getString(cursor.getColumnIndex("city_id")));
                 place.setAboveId(cursor.getString(cursor.getColumnIndex("above_id")));
                 place.setWeatherId(cursor.getString(cursor.getColumnIndex("weather_id")));
+                place.setPlaceType(cursor.getString(cursor.getColumnIndex("place_type")));
                 placeList.add(place);
             } while (cursor.moveToNext());
         }

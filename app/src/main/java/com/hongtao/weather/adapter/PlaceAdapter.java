@@ -12,6 +12,7 @@ import com.hongtao.weather.activity.WeatherApplication;
 import com.hongtao.weather.bean.Place;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -51,8 +52,8 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         holder.mTvCityName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(WeatherApplication.getContext(), "5555555555", Toast.LENGTH_SHORT).show();
-                mAdapterCallBack.onClickCallBackPlace(mPlaceList.get(position));
+                Place place = mPlaceList.get(holder.getAdapterPosition());
+                mAdapterCallBack.onClickCallBackPlace(place);
             }
         });
     }
@@ -62,10 +63,6 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         return mPlaceList.size();
     }
 
-    public void setPlaceList(List<Place> placeList) {
-        mPlaceList.clear();
-        mPlaceList = placeList;
-    }
 
     public interface ItemOnClickCallBackListener {
         void onClickCallBackPlace(Place place);
