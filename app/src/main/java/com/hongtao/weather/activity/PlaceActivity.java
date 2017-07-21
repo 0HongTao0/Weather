@@ -53,7 +53,6 @@ public class PlaceActivity extends AppCompatActivity implements PlaceFragment.Ca
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                Toast.makeText(PlaceActivity.this, ""+position, Toast.LENGTH_SHORT).show();
             }
         });
         List<Place> placeList = PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE);

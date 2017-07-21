@@ -28,23 +28,21 @@ public class PlaceFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_place_choose, container, false);
+        View view = inflater.inflate(R.layout.fragment_choose_place, container, false);
         mRvPlace = (RecyclerView) view.findViewById(R.id.choose_place_rv_list);
         PlaceAdapter placeAdapter = new PlaceAdapter(mPlaceList);
         mRvPlace.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvPlace.setAdapter(placeAdapter);
-        try {
-            placeAdapter.setAdapterCallBack(new PlaceAdapter.ItemOnClickCallBackListener() {
-                @Override
-                public void onClickCallBackPlace(Place place) {
-                    if (mCallBackToActivity != null) {
-                        mCallBackToActivity.callBackPlace(place);
-                    }
+
+        placeAdapter.setAdapterCallBack(new PlaceAdapter.ItemOnClickCallBackListener() {
+            @Override
+            public void onClickCallBackPlace(Place place) {
+                if (mCallBackToActivity != null) {
+                    mCallBackToActivity.callBackPlace(place);
                 }
-            });
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+            }
+        });
+
         return view;
     }
 
@@ -65,9 +63,5 @@ public class PlaceFragment extends Fragment {
 
     public interface CallBackToActivity {
         void callBackPlace(Place place);
-    }
-
-    public void setCallBackListener(CallBackToActivity callBackListener) {
-        this.mCallBackToActivity = callBackListener;
     }
 }

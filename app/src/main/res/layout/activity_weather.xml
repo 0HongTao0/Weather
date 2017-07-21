@@ -1,105 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/weather_sl_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:orientation="vertical"
-    tools:context="com.hongtao.weather.activity.WeatherActivity">
+    android:orientation="vertical">
 
-    <ScrollView
+    <android.support.v4.view.ViewPager
+        android:id="@+id/weather_vp_message"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    </android.support.v4.view.ViewPager>
 
+    <Button
+        android:id="@+id/weatheractivity_bt_choose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5sp"
+        android:background="@android:color/transparent"
+        android:text="@string/button_choose"/>
 
-            <TextView
-                android:id="@+id/weather_tv_where"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5sp"
-                android:gravity="center"
-                android:text="@string/textview_getaddress"
-                android:textColor="@color/White"
-                android:textSize="25sp"/>
-
-            <TextView
-                android:id="@+id/now_tv_temperature"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5sp"
-                android:gravity="center"
-                android:textColor="@color/White"
-                android:textSize="120sp"/>
-
-            <TextView
-                android:id="@+id/now_tv_winddirection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/White"
-                android:textSize="18sp"/>
-
-            <com.android.volley.toolbox.NetworkImageView
-                android:id="@+id/now_iv_niv_sky"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
-
-            <TextView
-                android:id="@+id/now_tv_air"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/White"/>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/textview_dailyforecast"
-                android:textColor="@color/White"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/dailyforecast_rv_weather"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5sp">
-
-            </android.support.v7.widget.RecyclerView>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/textview_hourforecast"
-                android:textColor="@color/White"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/hourforecast_rv_weather"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="NestedScrolling">
-
-            </android.support.v7.widget.RecyclerView>
-
-
-            <Button
-                android:id="@+id/weatheractivity_bt_choose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5sp"
-                android:background="@android:color/transparent"
-                android:text="@string/button_choose"/>
-
-        </LinearLayout>
-    </ScrollView>
-
-</android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

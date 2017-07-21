@@ -6,107 +6,43 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.hongtao.weather.R;
-import com.hongtao.weather.adapter.DailyForecastAdapter;
-import com.hongtao.weather.adapter.HourForecastAdapter;
-import com.hongtao.weather.bean.DailyForecast;
-import com.hongtao.weather.bean.HourForecast;
+import com.hongtao.weather.adapter.WeatherViewPagerAdapter;
 import com.hongtao.weather.bean.NowWeather;
 import com.hongtao.weather.bean.Weather;
 import com.hongtao.weather.service.ShowService;
-import com.hongtao.weather.util.DividerItemDecoration;
-import com.hongtao.weather.util.HandlerUtil;
-import com.hongtao.weather.util.HttpUtil;
 import com.hongtao.weather.util.NetwordUtil;
-import com.hongtao.weather.util.ParseUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    private TextView mTvName, mTvNowTemperature, mTvNowWindDirection, mTvNowWindSpeed;
-    private NetworkImageView mNivNowSky;
-    private RecyclerView mRvDailyForecast, mRvHourForecast;
     private UpdateStatusReceiver mReceiver;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private Button mBtChoose;
+    private ViewPager mVpWeather;
+    private List<Fragment> mFragments = new ArrayList<>();
+    private FragmentManager mFragmentManager = getSupportFragmentManager();
 
     private static final String WEATHER_ADDRESS = "http://guolin.tech/api/weather?cityid=";
     private static final String WEATHER_KEY = "&key=6c455039547e4d60a4da6c2e60d863b9";
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
 
     private String nowWeatherId = "CN101280101";  //广州天气ID
-    private static final int UPDATE_WEATHER_NOW = 1;
-    private static final int UPDATE_WEATHER_DAILYFORECAST = 2;
-    private static final int UPDATE_WEATHER_HOURFORECAST = 3;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case UPDATE_WEATHER_NOW:
-                    NowWeather nowWeather = (NowWeather) msg.obj;
-                    mTvName.setText(nowWeather.getCity());
-                    mTvNowTemperature.setText(nowWeather.getTemperature());
-                    mTvNowWindSpeed.setText(nowWeather.getAir());
-                    mTvNowWindDirection.setText(nowWeather.getWindDirection());
-                    RequestQueue queue = Volley.newRequestQueue(WeatherActivity.this);
-                    ImageLoader imageLoader = new ImageLoader(queue, new ImageLoader.ImageCache() {
-                        @Override
-                        public Bitmap getBitmap(String s) {
-                            return null;
-                        }
-
-                        @Override
-                        public void putBitmap(String s, Bitmap bitmap) {
-
-                        }
-                    });
-                    mNivNowSky.setImageUrl(ICON_ADDRESS + nowWeather.getSky() + ".png", imageLoader);
-                    break;
-                case UPDATE_WEATHER_DAILYFORECAST:
-                    DailyForecastAdapter dailyForecastAdapter = new DailyForecastAdapter(WeatherActivity.this, (List<DailyForecast>) msg.obj);
-                    LinearLayoutManager dailyLayoutManager = new LinearLayoutManager(WeatherActivity.this);
-                    mRvDailyForecast.setLayoutManager(dailyLayoutManager);
-                    mRvDailyForecast.addItemDecoration(new DividerItemDecoration(WeatherActivity.this, DividerItemDecoration.VERTICAL_LIST));
-                    mRvDailyForecast.setAdapter(dailyForecastAdapter);
-                    break;
-                case UPDATE_WEATHER_HOURFORECAST:
-                    HourForecastAdapter hourForecastAdapter = new HourForecastAdapter(WeatherActivity.this, (List<HourForecast>) msg.obj);
-                    LinearLayoutManager hourLayoutManager = new LinearLayoutManager(WeatherActivity.this);
-                    mRvHourForecast.setLayoutManager(hourLayoutManager);
-                    mRvHourForecast.addItemDecoration(new DividerItemDecoration(WeatherActivity.this, DividerItemDecoration.VERTICAL_LIST));
-                    mRvHourForecast.setAdapter(hourForecastAdapter);
-                    break;
-            }
-        }
-    };
 
     public static void startWeatherActivity(String weatherId, Activity activity) {
         Intent intent = new Intent(activity, WeatherActivity.class);
@@ -118,33 +54,24 @@ public class WeatherActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-        initView();
+        mVpWeather = (ViewPager) findViewById(R.id.weather_vp_message);
+        mBtChoose = (Button) findViewById(R.id.weatheractivity_bt_choose);
+        mBtChoose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(WeatherActivity.this, PlaceActivity.class);
+//                startActivityForResult(intent, 1);
+                showWeather(nowWeatherId);
+            }
+        });
         if (NetwordUtil.netIsWork(WeatherActivity.this)) {
-            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    showWeather(nowWeatherId);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(WeatherActivity.this, "已经更新天气状况", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            mBtChoose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(WeatherActivity.this, PlaceActivity.class);
-                    startActivityForResult(intent, 1);
-                }
-            });
-
             IntentFilter mIntentFilter = new IntentFilter();
             mIntentFilter.addAction("com.weather.update");
             mReceiver = new UpdateStatusReceiver();
             registerReceiver(mReceiver, mIntentFilter);
             showWeather(nowWeatherId);
         } else {
-            NowWeather nowWeather = getNowWeatherFromSP();
-            HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
+
         }
     }
 
@@ -154,19 +81,21 @@ public class WeatherActivity extends AppCompatActivity {
             public void onResponse(String s) {
                 Gson gson = new Gson();
                 Weather weather = gson.fromJson(s, Weather.class);
-                showNowWeather(weather);
-                showHourForecastWeather(weather);
-                showDailyForecastWeather(weather);
+                WeatherFragment fragment = new WeatherFragment();
+                fragment.setOnlineDataInFragment(weather);
+                mFragments.add(fragment);
+                WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
+                mVpWeather.setAdapter(adapter);
+                mVpWeather.setCurrentItem(mFragments.size());
                 updateNotification(weather);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                Log.e("TAG", volleyError.getMessage(), volleyError);
             }
         });
         WeatherApplication.getRequestQueue().add(stringRequest);
-
     }
 
     @Override
@@ -193,30 +122,6 @@ public class WeatherActivity extends AppCompatActivity {
         unregisterReceiver(mReceiver);
     }
 
-    private void initView() {
-        mTvName = (TextView) findViewById(R.id.weather_tv_where);
-        mTvNowTemperature = (TextView) findViewById(R.id.now_tv_temperature);
-        mTvNowWindDirection = (TextView) findViewById(R.id.now_tv_winddirection);
-        mTvNowWindSpeed = (TextView) findViewById(R.id.now_tv_air);
-        mBtChoose = (Button) findViewById(R.id.weatheractivity_bt_choose);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.weather_sl_refresh);
-        mRvDailyForecast = (RecyclerView) findViewById(R.id.dailyforecast_rv_weather);
-        mRvHourForecast = (RecyclerView) findViewById(R.id.hourforecast_rv_weather);
-        mRvHourForecast.setNestedScrollingEnabled(false);
-        mRvHourForecast.setNestedScrollingEnabled(false);
-        mNivNowSky = (NetworkImageView) findViewById(R.id.now_iv_niv_sky);
-    }
-
-    private void showNowWeather(Weather weather) {
-        NowWeather nowWeather = new NowWeather();
-        nowWeather.setCity(weather.getHeWeather().get(0).getBasic().getCity());
-        nowWeather.setTemperature(weather.getHeWeather().get(0).getNow().getTemperature());
-        nowWeather.setSky(weather.getHeWeather().get(0).getNow().getCond().getCode());
-        nowWeather.setWindDirection(weather.getHeWeather().get(0).getNow().getWind().getWindDirection());
-        nowWeather.setAir(weather.getHeWeather().get(0).getAqi().getCity().getQlty());
-        saveNowWeatherInSP(nowWeather);
-        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
-    }
 
     private void saveNowWeatherInSP(NowWeather nowWeather) {
         SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
@@ -239,33 +144,6 @@ public class WeatherActivity extends AppCompatActivity {
         return nowWeather;
     }
 
-    private void showHourForecastWeather(Weather weather) {
-        List<HourForecast> hourForecasts = new ArrayList<>();
-        for (int i = 0; i < weather.getHeWeather().get(0).getHourlyForecast().size(); i++) {
-            HourForecast hourForecast = new HourForecast();
-            hourForecast.setTime(weather.getHeWeather().get(0).getHourlyForecast().get(i).getDate());
-            hourForecast.setSky(weather.getHeWeather().get(0).getHourlyForecast().get(i).getCond().getCode());
-            hourForecast.setTemperature(weather.getHeWeather().get(0).getHourlyForecast().get(i).getTemperature() + "°");
-            hourForecasts.add(hourForecast);
-        }
-        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_HOURFORECAST, hourForecasts);
-    }
-
-    private void showDailyForecastWeather(Weather weather) {
-        List<DailyForecast> dailyForecastList = new ArrayList<>();
-
-        for (int i = 0; i < weather.getHeWeather().get(0).getDailyForecast().size(); i++) {
-            DailyForecast dailyForecast = new DailyForecast();
-            dailyForecast.setDate(weather.getHeWeather().get(0).getDailyForecast().get(i).getDate());
-            dailyForecast.setDaySky(weather.getHeWeather().get(0).getDailyForecast().get(i).getCond().getCodeDay());
-            dailyForecast.setNightSky(weather.getHeWeather().get(0).getDailyForecast().get(i).getCond().getCodeNight());
-            dailyForecast.setTemperature(weather.getHeWeather().get(0).getDailyForecast().get(i).getTmp().getMinTemperature() + "°~" + weather.getHeWeather().get(0).getDailyForecast().get(i).getTmp().getMaxTemperature() + "°");
-            dailyForecast.setWindDirection(weather.getHeWeather().get(0).getDailyForecast().get(i).getWind().getWindDirection());
-            dailyForecast.setWindSpeed(weather.getHeWeather().get(0).getDailyForecast().get(i).getWind().getWindSpeed() + "km/h");
-            dailyForecastList.add(dailyForecast);
-        }
-        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_DAILYFORECAST, dailyForecastList);
-    }
 
     private void updateNotification(Weather weather) {
         List<String> msgList = new ArrayList<>();
