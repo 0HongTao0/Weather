@@ -113,6 +113,10 @@ public class WeatherFragment extends Fragment {
         showDailyForecastWeather(weather);
     }
 
+    public void setOfflineDataInFragment(NowWeather nowWeather) {
+        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
+    }
+
     private void initView(View view) {
         mTvName = (TextView) view.findViewById(R.id.weather_tv_where);
         mTvNowTemperature = (TextView) view.findViewById(R.id.now_tv_temperature);
@@ -128,7 +132,6 @@ public class WeatherFragment extends Fragment {
             mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-//                    showWeather(nowWeatherId);
                     mSwipeRefreshLayout.setRefreshing(false);
                     Toast.makeText(getContext(), "已经更新天气状况", Toast.LENGTH_SHORT).show();
                 }

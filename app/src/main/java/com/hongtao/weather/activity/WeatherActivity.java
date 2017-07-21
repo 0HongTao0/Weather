@@ -59,9 +59,8 @@ public class WeatherActivity extends AppCompatActivity {
         mBtChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(WeatherActivity.this, PlaceActivity.class);
-//                startActivityForResult(intent, 1);
-                showWeather(nowWeatherId);
+                Intent intent = new Intent(WeatherActivity.this, PlaceActivity.class);
+                startActivityForResult(intent, 1);
             }
         });
         if (NetwordUtil.netIsWork(WeatherActivity.this)) {
@@ -71,6 +70,7 @@ public class WeatherActivity extends AppCompatActivity {
             registerReceiver(mReceiver, mIntentFilter);
             showWeather(nowWeatherId);
         } else {
+            NowWeather nowWeather = getNowWeatherFromSP();
 
         }
     }
@@ -81,12 +81,12 @@ public class WeatherActivity extends AppCompatActivity {
             public void onResponse(String s) {
                 Gson gson = new Gson();
                 Weather weather = gson.fromJson(s, Weather.class);
+                saveNowWeatherInSP(weather);
                 WeatherFragment fragment = new WeatherFragment();
                 fragment.setOnlineDataInFragment(weather);
                 mFragments.add(fragment);
                 WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
                 mVpWeather.setAdapter(adapter);
-                mVpWeather.setCurrentItem(mFragments.size());
                 updateNotification(weather);
             }
         }, new Response.ErrorListener() {
@@ -123,13 +123,13 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
 
-    private void saveNowWeatherInSP(NowWeather nowWeather) {
+    private void saveNowWeatherInSP(Weather weather) {
         SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
-        editor.putString("now_weather_city", nowWeather.getCity());
-        editor.putString("now_weather_temperature", nowWeather.getTemperature());
-        editor.putString("now_weather_sky", nowWeather.getSky());
-        editor.putString("now_weather_wind_direction", nowWeather.getWindDirection());
-        editor.putString("now_weather_air", nowWeather.getAir());
+        editor.putString("now_weather_city", weather.getHeWeather().get(0).getBasic().getCity());
+        editor.putString("now_weather_temperature", weather.getHeWeather().get(0).getNow().getTemperature());
+        editor.putString("now_weather_sky", weather.getHeWeather().get(0).getNow().getCond().getCode());
+        editor.putString("now_weather_wind_direction", weather.getHeWeather().get(0).getNow().getWind().getWindDirection());
+        editor.putString("now_weather_air", weather.getHeWeather().get(0).getAqi().getCity().getQlty());
         editor.apply();
     }
 

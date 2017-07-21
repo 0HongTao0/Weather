@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 
 import com.android.volley.Response;
@@ -45,9 +44,11 @@ public class PlaceActivity extends AppCompatActivity implements PlaceFragment.Ca
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_place);
+
         if (!PlaceDatabaseDeal.isTableExit()) {
             saveProvinceInDatabase();
         }
+
         mVpPlace = (ViewPager) findViewById(R.id.place_vp_display_fragment);
         mVpPlace.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -55,6 +56,7 @@ public class PlaceActivity extends AppCompatActivity implements PlaceFragment.Ca
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
         });
+
         List<Place> placeList = PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE);
         PlaceFragment fragment = new PlaceFragment();
         fragment.setDataInFragment(placeList);
