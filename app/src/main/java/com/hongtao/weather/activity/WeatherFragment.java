@@ -48,8 +48,8 @@ public class WeatherFragment extends Fragment {
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
 
     private static final int UPDATE_WEATHER_NOW = 1;
-    private static final int UPDATE_WEATHER_DAILYFORECAST = 2;
-    private static final int UPDATE_WEATHER_HOURFORECAST = 3;
+    private static final int UPDATE_WEATHER_DAILY_FORECAST = 2;
+    private static final int UPDATE_WEATHER_HOURLY_FORECAST = 3;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -75,14 +75,14 @@ public class WeatherFragment extends Fragment {
                     });
                     mNivNowSky.setImageUrl(ICON_ADDRESS + nowWeather.getSky() + ".png", imageLoader);
                     break;
-                case UPDATE_WEATHER_DAILYFORECAST:
+                case UPDATE_WEATHER_DAILY_FORECAST:
                     DailyForecastAdapter dailyForecastAdapter = new DailyForecastAdapter(getActivity(), (List<DailyForecast>) msg.obj);
                     LinearLayoutManager dailyLayoutManager = new LinearLayoutManager(getContext());
                     mRvDailyForecast.setLayoutManager(dailyLayoutManager);
                     mRvDailyForecast.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
                     mRvDailyForecast.setAdapter(dailyForecastAdapter);
                     break;
-                case UPDATE_WEATHER_HOURFORECAST:
+                case UPDATE_WEATHER_HOURLY_FORECAST:
                     HourForecastAdapter hourForecastAdapter = new HourForecastAdapter(getActivity(), (List<HourForecast>) msg.obj);
                     LinearLayoutManager hourLayoutManager = new LinearLayoutManager(getContext());
                     mRvHourForecast.setLayoutManager(hourLayoutManager);
@@ -153,7 +153,7 @@ public class WeatherFragment extends Fragment {
             dailyForecast.setWindSpeed(weather.getHeWeather().get(0).getDailyForecast().get(i).getWind().getWindSpeed() + "km/h");
             dailyForecastList.add(dailyForecast);
         }
-        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_DAILYFORECAST, dailyForecastList);
+        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_DAILY_FORECAST, dailyForecastList);
     }
 
 
@@ -176,6 +176,6 @@ public class WeatherFragment extends Fragment {
             hourForecast.setTemperature(weather.getHeWeather().get(0).getHourlyForecast().get(i).getTemperature() + "°");
             hourForecasts.add(hourForecast);
         }
-        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_HOURFORECAST, hourForecasts);
+        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_HOURLY_FORECAST, hourForecasts);
     }
 }

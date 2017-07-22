@@ -1,25 +1,37 @@
-<LinearLayout
+<android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/weather_dl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
-    android:orientation="vertical">
+    android:background="@drawable/background">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/weather_vp_message"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
 
     </android.support.v4.view.ViewPager>
 
-    <Button
-        android:id="@+id/weatheractivity_bt_choose"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="5sp"
-        android:background="@android:color/transparent"
-        android:text="@string/button_choose"/>
+        android:layout_height="match_parent">
 
-</LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/weather_bt_choose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_margin="30dp"
+            android:background="@android:color/transparent"/>
+    </FrameLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/weather_nv_place"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/navigation_weather"/>
+
+
+</android.support.v4.widget.DrawerLayout>

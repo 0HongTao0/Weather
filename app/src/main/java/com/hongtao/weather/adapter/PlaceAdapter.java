@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> {
     private ItemOnClickCallBackListener mAdapterCallBack;
-    private List<Place> mPlaceList = new ArrayList<>();
+    private List<Place> mPlaceList;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView mTvCityName;
@@ -36,6 +36,10 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
 
     public PlaceAdapter(List<Place> places) {
         this.mPlaceList = places;
+    }
+
+    public PlaceAdapter() {
+
     }
 
     @Override
@@ -56,6 +60,11 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
                 mAdapterCallBack.onClickCallBackPlace(place);
             }
         });
+    }
+
+    public void updatePlaceList(List<Place> places) {
+        this.mPlaceList = places;
+        notifyDataSetChanged();
     }
 
     @Override
