@@ -1,6 +1,5 @@
 package com.hongtao.weather.activity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +33,7 @@ import com.hongtao.weather.bean.Place;
 import com.hongtao.weather.bean.Province;
 import com.hongtao.weather.bean.Weather;
 import com.hongtao.weather.service.ShowService;
+import com.hongtao.weather.util.DividerItemDecoration;
 import com.hongtao.weather.util.DiyGSONRequest;
 import com.hongtao.weather.util.NetwordUtil;
 
@@ -46,7 +45,6 @@ public class WeatherActivity extends AppCompatActivity {
     private UpdateStatusReceiver mReceiver;
     private ViewPager mVpWeather;
     private RecyclerView mRvPlace;
-    private DrawerLayout mDrawerLayout;
     private List<Fragment> mFragments = new ArrayList<>();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
     private PlaceAdapter mPlaceAdapter = new PlaceAdapter();
@@ -68,10 +66,11 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         initView();
-        if (!getSharedPreferences("data", MODE_PRIVATE).getString("now_weather_id", "nothing").equals("nothing")) {
-            SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        if (!getSharedPreferences("now", MODE_PRIVATE).getString("now_weather_id", "nothing").equals("nothing")) {
+            SharedPreferences sharedPreferences = getSharedPreferences("now", MODE_PRIVATE);
             nowWeatherId = sharedPreferences.getString("now_weather_id", "");
         }
+
         if (NetwordUtil.netIsWork(WeatherActivity.this)) {
             displayPlaceList();
             IntentFilter mIntentFilter = new IntentFilter();
@@ -87,7 +86,6 @@ public class WeatherActivity extends AppCompatActivity {
             WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
             mVpWeather.setAdapter(adapter);
         }
-
     }
 
     private void showWeather(final String weatherId) {
@@ -99,16 +97,11 @@ public class WeatherActivity extends AppCompatActivity {
                 WeatherFragment fragment = new WeatherFragment();
                 fragment.setOnlineDataInFragment(weather);
                 mFragments.add(fragment);
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
                 mVpWeather.setAdapter(adapter);
                 mVpWeather.setCurrentItem(mFragments.size());
                 updateNotification(weather);
-                saveNowWeatherInSP(weather, weatherId);
+                saveNowWeatherInSP(weather);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -144,14 +137,13 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
 
-    private void saveNowWeatherInSP(Weather weather, String weatherId) {
+    private void saveNowWeatherInSP(Weather weather) {
         SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
         editor.putString("now_weather_city", weather.getHeWeather().get(0).getBasic().getCity());
         editor.putString("now_weather_temperature", weather.getHeWeather().get(0).getNow().getTemperature());
         editor.putString("now_weather_sky", weather.getHeWeather().get(0).getNow().getCond().getCode());
         editor.putString("now_weather_wind_direction", weather.getHeWeather().get(0).getNow().getWind().getWindDirection());
         editor.putString("now_weather_air", weather.getHeWeather().get(0).getAqi().getCity().getQlty());
-        editor.putString("now_weather_id", weatherId);
         editor.apply();
     }
 
@@ -164,6 +156,12 @@ public class WeatherActivity extends AppCompatActivity {
         nowWeather.setWindDirection(sharedPreferences.getString("now_weather_wind_direction", ""));
         nowWeather.setAir(sharedPreferences.getString("now_weather_air", ""));
         return nowWeather;
+    }
+
+    private void saveNowWeatherIdInSP() {
+        SharedPreferences.Editor editor = getSharedPreferences("now", MODE_PRIVATE).edit();
+        editor.putString("now_weather_id", nowWeatherId);
+        editor.apply();
     }
 
 
@@ -208,6 +206,7 @@ public class WeatherActivity extends AppCompatActivity {
                         break;
                     case PLACE_TYPE_DISTRICT:
                         showWeather(place.getWeatherId());
+                        nowWeatherId = place.getWeatherId();
                         List<Place> placeList = PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE);
                         updateRecyclerView(placeList, mRvPlace, mPlaceAdapter);
                         break;
@@ -217,7 +216,6 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.weather_dl);
         NavigationView mNavigationView = (NavigationView) findViewById(R.id.weather_nv_place);
         mRvPlace = (RecyclerView) mNavigationView.getHeaderView(0).findViewById(R.id.weather_rv_choose);
         mVpWeather = (ViewPager) findViewById(R.id.weather_vp_message);
@@ -225,7 +223,8 @@ public class WeatherActivity extends AppCompatActivity {
         mBtChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(WeatherActivity.this, "正在开发", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WeatherActivity.this, "已经设置该城市为当前城市", Toast.LENGTH_SHORT).show();
+                saveNowWeatherIdInSP();
             }
         });
     }
@@ -316,6 +315,7 @@ public class WeatherActivity extends AppCompatActivity {
         placeAdapter.updatePlaceList(places);
         recyclerView.setLayoutManager(new LinearLayoutManager(WeatherActivity.this));
         recyclerView.setAdapter(placeAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(WeatherActivity.this, DividerItemDecoration.VERTICAL_LIST));
         mPlaceAdapter.notifyDataSetChanged();
     }
 }

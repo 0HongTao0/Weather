@@ -178,4 +178,5 @@ public class WeatherFragment extends Fragment {
         }
         HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_HOURLY_FORECAST, hourForecasts);
     }
+
 }

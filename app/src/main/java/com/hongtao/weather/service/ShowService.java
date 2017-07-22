@@ -21,6 +21,8 @@ import com.hongtao.weather.util.HttpUtil;
 import java.util.List;
 
 /**
+ * 更新状态栏通知与隔 6 小时更新 Activity 天气信息的前台服务
+ *
  * author：Administrator on 2017/7/13/013 11:24
  * email：935245421@qq.com
  */

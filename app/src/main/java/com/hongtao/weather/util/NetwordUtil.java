@@ -11,6 +11,11 @@ import android.net.NetworkInfo;
  * mobile：18306620711
  */
 public class NetwordUtil {
+    /**
+     * 判断当前是否连接网络
+     * @param activity
+     * @return
+     */
     public static boolean netIsWork(Activity activity) {
         ConnectivityManager manager = (ConnectivityManager) activity.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (manager == null) {

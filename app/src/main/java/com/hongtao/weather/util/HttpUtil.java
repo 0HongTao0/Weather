@@ -17,44 +17,10 @@ import java.net.URL;
  */
 public class HttpUtil {
     /**
-     * 发送网络请求，并接收返回数据
-     *
+     * 通过地址 URL 下载一张图片
      * @param address
-     * @return String
+     * @return
      */
-    public static String sendRequest(String address) {
-        HttpURLConnection connection = null;
-        BufferedReader bufferedReader = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        try {
-            URL url = new URL(address);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            InputStream is = connection.getInputStream();
-            bufferedReader = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        return stringBuilder.toString();
-    }
-
     static public Bitmap downloadPic(String address) {
         InputStream is = null;
         Bitmap bitmap = null;

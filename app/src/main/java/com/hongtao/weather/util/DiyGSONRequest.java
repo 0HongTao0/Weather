@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *
+ * 自定义发送网络请求返回的数据类型 List<Weather>
  * author：hongtao on 2017/7/18/018 11:31
  * email：935245421@qq.com
  * mobile：18306620711
@@ -23,7 +25,7 @@ public class DiyGSONRequest<T> extends Request<T> {
     private final Response.Listener<List<T>> mListener;
     private Class<T> mClass;
 
-    public DiyGSONRequest(int method, String url, Class<T> clazz, Response.Listener<List<T>> listener, Response.ErrorListener errorListener) {
+    private DiyGSONRequest(int method, String url, Class<T> clazz, Response.Listener<List<T>> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         mClass = clazz;
         mListener = listener;

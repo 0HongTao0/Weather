@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 
 /**
+ * 一个与数据库连接的通道
+ *
  * author：hongtao on 2017/7/18/018 10:30
  * email：935245421@qq.com
  * mobile：18306620711

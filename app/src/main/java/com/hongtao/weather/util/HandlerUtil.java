@@ -8,7 +8,12 @@ import android.os.Message;
  * email：935245421@qq.com
  */
 public class HandlerUtil {
-
+    /**
+     * Handler 发送消息的工具
+     * @param handler
+     * @param messageType
+     * @param messageObj
+     */
     public static void sendMessageToHandler(Handler handler, int messageType, Object messageObj) {
         Message message = new Message();
         message.what = messageType;
