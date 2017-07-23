@@ -60,7 +60,7 @@ public class WeatherFragment extends Fragment {
                 case UPDATE_WEATHER_NOW:
                     NowWeather nowWeather = (NowWeather) msg.obj;
                     mTvName.setText(nowWeather.getCity());
-                    mTvNowTemperature.setText(nowWeather.getTemperature());
+                    mTvNowTemperature.setText(nowWeather.getTemperature() + "°");
                     mTvNowWindSpeed.setText(nowWeather.getAir());
                     mTvNowWindDirection.setText(nowWeather.getWindDirection());
                     RequestQueue queue = Volley.newRequestQueue(getContext());

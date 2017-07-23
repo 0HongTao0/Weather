@@ -22,13 +22,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
-            android:layout_margin="30dp"
+            android:layout_margin="15dp"
             android:background="@android:color/transparent"/>
     </FrameLayout>
 
     <android.support.design.widget.NavigationView
+        android:background="@drawable/bc"
         android:id="@+id/weather_nv_place"
-        android:layout_width="match_parent"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/navigation_weather"/>

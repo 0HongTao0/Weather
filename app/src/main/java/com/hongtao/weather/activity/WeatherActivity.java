@@ -48,6 +48,7 @@ public class WeatherActivity extends AppCompatActivity {
     private UpdateStatusReceiver mReceiver;
     private ViewPager mVpWeather;
     private RecyclerView mRvPlace;
+    private NavigationView mNavigationView;
     private List<Fragment> mFragments = new ArrayList<>();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
     private PlaceAdapter mPlaceAdapter = new PlaceAdapter();
@@ -213,6 +214,7 @@ public class WeatherActivity extends AppCompatActivity {
                             showWeather(place.getWeatherId());
                             nowWeatherId = place.getWeatherId();
                         }
+                        mDrawerLayout.closeDrawer(mNavigationView);
                         updateRecyclerView(PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE), mRvPlace, mPlaceAdapter);
                         break;
                 }
@@ -222,7 +224,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private void initView() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.weather_dl);
-        NavigationView mNavigationView = (NavigationView) findViewById(R.id.weather_nv_place);
+        mNavigationView = (NavigationView) findViewById(R.id.weather_nv_place);
         mRvPlace = (RecyclerView) mNavigationView.getHeaderView(0).findViewById(R.id.weather_rv_choose);
         mVpWeather = (ViewPager) findViewById(R.id.weather_vp_message);
         FloatingActionButton mBtChoose = (FloatingActionButton) findViewById(R.id.weather_bt_choose);
@@ -348,6 +350,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 判断选择的地点是否已经存在 FragmentManager 里面（避免重复加载）
+     *
      * @param weatherId
      * @return
      */
