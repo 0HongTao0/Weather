@@ -72,6 +72,7 @@ public class PlaceDatabaseDeal {
         if (cursor.moveToNext()) {
             return true;
         }
+        cursor.close();
         return false;
     }
 
@@ -86,6 +87,7 @@ public class PlaceDatabaseDeal {
         if (cursor.moveToNext()) {
             return true;
         }
+        cursor.close();
         return false;
     }
 
@@ -115,6 +117,7 @@ public class PlaceDatabaseDeal {
                 placeList.add(place);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return placeList;
     }
 }

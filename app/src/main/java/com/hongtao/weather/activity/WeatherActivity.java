@@ -160,9 +160,9 @@ public class WeatherActivity extends AppCompatActivity {
         return nowWeather;
     }
 
-    private void saveNowWeatherIdInSP() {
+    private void saveNowWeatherIdInSP(String weatherId) {
         SharedPreferences.Editor editor = getSharedPreferences("now", MODE_PRIVATE).edit();
-        editor.putString("now_weather_id", nowWeatherId);
+        editor.putString("now_weather_id", weatherId);
         editor.apply();
     }
 
@@ -207,10 +207,13 @@ public class WeatherActivity extends AppCompatActivity {
                         }
                         break;
                     case PLACE_TYPE_DISTRICT:
-                        showWeather(place.getWeatherId());
-                        nowWeatherId = place.getWeatherId();
-                        List<Place> placeList = PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE);
-                        updateRecyclerView(placeList, mRvPlace, mPlaceAdapter);
+                        if (isPlaceDisplay(place.getWeatherId())) {
+                            Toast.makeText(WeatherActivity.this, "已经展示该地区天气", Toast.LENGTH_SHORT).show();
+                        } else {
+                            showWeather(place.getWeatherId());
+                            nowWeatherId = place.getWeatherId();
+                        }
+                        updateRecyclerView(PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE), mRvPlace, mPlaceAdapter);
                         break;
                 }
             }
@@ -227,11 +230,15 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(WeatherActivity.this, "已经设置该城市为当前城市", Toast.LENGTH_SHORT).show();
-                saveNowWeatherIdInSP();
+                WeatherFragment fragment = (WeatherFragment) mFragmentManager.getFragments().get(mVpWeather.getCurrentItem());
+                saveNowWeatherIdInSP(fragment.getFragmentWeatherId());
             }
         });
     }
 
+    /**
+     * 把省份列表从网络端取下来并存入数据库
+     */
     private void saveProvinceInDatabase() {
         DiyGSONRequest<Province> request = new DiyGSONRequest<>(PLACE_ADDRESS, Province.class, new Response.Listener<List<Province>>() {
             @Override
@@ -258,6 +265,11 @@ public class WeatherActivity extends AppCompatActivity {
         WeatherApplication.getRequestQueue().add(request);
     }
 
+    /**
+     * 把该 place 下的城市列表从网络端取下来并存入数据库
+     *
+     * @param place
+     */
     private void saveCityInDatabase(Place place) {
         final String aboveId = place.getId();
         DiyGSONRequest<City> request = new DiyGSONRequest<>(PLACE_ADDRESS + "/" + place.getId(), City.class, new Response.Listener<List<City>>() {
@@ -285,6 +297,11 @@ public class WeatherActivity extends AppCompatActivity {
         WeatherApplication.getRequestQueue().add(request);
     }
 
+    /**
+     * 把该 place 下的地区列表从网络上取下来并存入数据库
+     *
+     * @param place
+     */
     private void saveDistrictInDatabase(Place place) {
         final String aboveId = place.getId();
         StringBuilder address = new StringBuilder();
@@ -314,11 +331,34 @@ public class WeatherActivity extends AppCompatActivity {
         WeatherApplication.getRequestQueue().add(request);
     }
 
+    /**
+     * 更新 RecyclerView 的地点列表
+     *
+     * @param places
+     * @param recyclerView
+     * @param placeAdapter
+     */
     private void updateRecyclerView(List<Place> places, RecyclerView recyclerView, PlaceAdapter placeAdapter) {
         placeAdapter.updatePlaceList(places);
         recyclerView.setLayoutManager(new LinearLayoutManager(WeatherActivity.this));
         recyclerView.setAdapter(placeAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(WeatherActivity.this, DividerItemDecoration.VERTICAL_LIST));
         mPlaceAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 判断选择的地点是否已经存在 FragmentManager 里面（避免重复加载）
+     * @param weatherId
+     * @return
+     */
+    private Boolean isPlaceDisplay(String weatherId) {
+        List<Fragment> fragments = mFragmentManager.getFragments();
+        for (int i = 0; i < fragments.size(); i++) {
+            WeatherFragment weatherFragment = (WeatherFragment) fragments.get(i);
+            if (weatherFragment.getFragmentWeatherId().equals(weatherId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -99,8 +99,16 @@ public class Weather {
 
         public static class BasicBean {
 
-
+            private String id;
             private String city;
+
+            public String getId() {
+                return id;
+            }
+
+            public void setId(String id) {
+                this.id = id;
+            }
 
             public String getCity() {
                 return city;

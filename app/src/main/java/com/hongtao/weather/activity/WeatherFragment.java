@@ -141,7 +141,7 @@ public class WeatherFragment extends Fragment {
                 @Override
                 public void onRefresh() {
                     mSwipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(getContext(), "已经更新天气状况", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "还没想好逻辑更新", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -187,4 +187,7 @@ public class WeatherFragment extends Fragment {
         HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_HOURLY_FORECAST, hourForecasts);
     }
 
+    public String getFragmentWeatherId() {
+        return this.mWeather.getHeWeather().get(0).getBasic().getId();
+    }
 }
