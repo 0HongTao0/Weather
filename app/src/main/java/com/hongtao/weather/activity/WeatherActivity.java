@@ -9,7 +9,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,6 +44,7 @@ import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity {
 
+    private DrawerLayout mDrawerLayout;
     private UpdateStatusReceiver mReceiver;
     private ViewPager mVpWeather;
     private RecyclerView mRvPlace;
@@ -99,7 +102,6 @@ public class WeatherActivity extends AppCompatActivity {
                 mFragments.add(fragment);
                 WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
                 mVpWeather.setAdapter(adapter);
-                mVpWeather.setCurrentItem(mFragments.size());
                 updateNotification(weather);
                 saveNowWeatherInSP(weather);
             }
@@ -216,6 +218,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.weather_dl);
         NavigationView mNavigationView = (NavigationView) findViewById(R.id.weather_nv_place);
         mRvPlace = (RecyclerView) mNavigationView.getHeaderView(0).findViewById(R.id.weather_rv_choose);
         mVpWeather = (ViewPager) findViewById(R.id.weather_vp_message);

@@ -44,6 +44,8 @@ public class WeatherFragment extends Fragment {
     private NetworkImageView mNivNowSky;
     private RecyclerView mRvDailyForecast, mRvHourForecast;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Weather mWeather;
+    private NowWeather mNowWeather;
 
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
 
@@ -97,6 +99,14 @@ public class WeatherFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (NetwordUtil.netIsWork(getActivity())) {
+            showNowWeather(mWeather);
+            showHourForecastWeather(mWeather);
+            showDailyForecastWeather(mWeather);
+        } else {
+            HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, mNowWeather);
+        }
+
     }
 
 
@@ -108,13 +118,11 @@ public class WeatherFragment extends Fragment {
     }
 
     public void setOnlineDataInFragment(Weather weather) {
-        showNowWeather(weather);
-        showHourForecastWeather(weather);
-        showDailyForecastWeather(weather);
+        this.mWeather = weather;
     }
 
     public void setOfflineDataInFragment(NowWeather nowWeather) {
-        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, nowWeather);
+        this.mNowWeather = nowWeather;
     }
 
     private void initView(View view) {
