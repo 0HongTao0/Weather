@@ -21,6 +21,12 @@ public class WeatherViewPagerAdapter extends FragmentStatePagerAdapter {
         this.mFragmentList = fragmentList;
     }
 
+    public void updateViewPager(List<Fragment> fragmentList) {
+        mFragmentList.clear();
+        mFragmentList.addAll(fragmentList);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemPosition(Object object) {
         return POSITION_NONE;

@@ -1,4 +1,4 @@
-package com.hongtao.weather.activity;
+package com.hongtao.weather.fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -29,6 +29,9 @@ import com.hongtao.weather.bean.Weather;
 import com.hongtao.weather.util.DividerItemDecoration;
 import com.hongtao.weather.util.HandlerUtil;
 import com.hongtao.weather.util.NetwordUtil;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +46,7 @@ public class WeatherFragment extends Fragment {
     private TextView mTvName, mTvNowTemperature, mTvNowWindDirection, mTvNowWindSpeed;
     private NetworkImageView mNivNowSky;
     private RecyclerView mRvDailyForecast, mRvHourForecast;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SmartRefreshLayout mSmartRefreshLayout;
     private Weather mWeather;
     private NowWeather mNowWeather;
 
@@ -130,18 +133,17 @@ public class WeatherFragment extends Fragment {
         mTvNowTemperature = (TextView) view.findViewById(R.id.now_tv_temperature);
         mTvNowWindDirection = (TextView) view.findViewById(R.id.now_tv_winddirection);
         mTvNowWindSpeed = (TextView) view.findViewById(R.id.now_tv_air);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.weather_sl_refresh);
+        mSmartRefreshLayout = (SmartRefreshLayout) view.findViewById(R.id.weather_sl_refresh);
         mRvDailyForecast = (RecyclerView) view.findViewById(R.id.dailyforecast_rv_weather);
         mRvHourForecast = (RecyclerView) view.findViewById(R.id.hourforecast_rv_weather);
         mRvHourForecast.setNestedScrollingEnabled(false);
         mRvHourForecast.setNestedScrollingEnabled(false);
         mNivNowSky = (NetworkImageView) view.findViewById(R.id.now_iv_niv_sky);
         if (NetwordUtil.netIsWork(getActivity())) {
-            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            mSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
                 @Override
-                public void onRefresh() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(getContext(), "还没想好逻辑更新", Toast.LENGTH_SHORT).show();
+                public void onRefresh(RefreshLayout refreshlayout) {
+                    mSmartRefreshLayout.finishRefresh(1000);
                 }
             });
         }

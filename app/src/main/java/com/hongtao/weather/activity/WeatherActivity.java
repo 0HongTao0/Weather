@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +33,8 @@ import com.hongtao.weather.bean.NowWeather;
 import com.hongtao.weather.bean.Place;
 import com.hongtao.weather.bean.Province;
 import com.hongtao.weather.bean.Weather;
+import com.hongtao.weather.fragment.LoadFragment;
+import com.hongtao.weather.fragment.WeatherFragment;
 import com.hongtao.weather.service.ShowService;
 import com.hongtao.weather.util.DividerItemDecoration;
 import com.hongtao.weather.util.DiyGSONRequest;
@@ -96,6 +97,13 @@ public class WeatherActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(WEATHER_ADDRESS + weatherId + WEATHER_KEY, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        LoadFragment loadFragment = new LoadFragment();
+                        loadFragment.show(getFragmentManager(), "load");
+                    }
+                }).start();
                 Gson gson = new Gson();
                 Weather weather = gson.fromJson(s, Weather.class);
                 WeatherFragment fragment = new WeatherFragment();
@@ -103,6 +111,7 @@ public class WeatherActivity extends AppCompatActivity {
                 mFragments.add(fragment);
                 WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
                 mVpWeather.setAdapter(adapter);
+                mVpWeather.setCurrentItem(mFragments.size());
                 updateNotification(weather);
                 saveNowWeatherInSP(weather);
             }
