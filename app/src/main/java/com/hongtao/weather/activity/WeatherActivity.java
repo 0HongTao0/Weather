@@ -163,6 +163,10 @@ public class WeatherActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    /**
+     * 从 SharePreferences 中去到缓存的 NowWeather 信息
+     * @return
+     */
     private NowWeather getNowWeatherFromSP() {
         SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
         NowWeather nowWeather = new NowWeather();
