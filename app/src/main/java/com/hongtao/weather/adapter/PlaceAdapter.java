@@ -34,14 +34,6 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         }
     }
 
-    public PlaceAdapter(List<Place> places) {
-        this.mPlaceList = places;
-    }
-
-    public PlaceAdapter() {
-
-    }
-
     @Override
     public PlaceAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rv_place, parent, false);
@@ -56,7 +48,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         holder.mTvCityName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Place place = mPlaceList.get(holder.getAdapterPosition());
+                Place place = mPlaceList.get(position);
                 mAdapterCallBack.onClickCallBackPlace(place);
             }
         });

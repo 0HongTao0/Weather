@@ -6,20 +6,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-import com.android.volley.toolbox.Volley;
 import com.hongtao.weather.R;
+import com.hongtao.weather.activity.WeatherApplication;
 import com.hongtao.weather.adapter.DailyForecastAdapter;
 import com.hongtao.weather.adapter.HourForecastAdapter;
 import com.hongtao.weather.bean.DailyForecast;
@@ -49,6 +46,7 @@ public class WeatherFragment extends Fragment {
     private SmartRefreshLayout mSmartRefreshLayout;
     private Weather mWeather;
     private NowWeather mNowWeather;
+    private CallBackToActivity mCallBackUpdateToActivity;
 
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
 
@@ -66,8 +64,7 @@ public class WeatherFragment extends Fragment {
                     mTvNowTemperature.setText(nowWeather.getTemperature() + "°");
                     mTvNowWindSpeed.setText(nowWeather.getAir());
                     mTvNowWindDirection.setText(nowWeather.getWindDirection());
-                    RequestQueue queue = Volley.newRequestQueue(getContext());
-                    ImageLoader imageLoader = new ImageLoader(queue, new ImageLoader.ImageCache() {
+                    ImageLoader imageLoader = new ImageLoader(WeatherApplication.getRequestQueue(), new ImageLoader.ImageCache() {
                         @Override
                         public Bitmap getBitmap(String s) {
                             return null;
@@ -143,7 +140,9 @@ public class WeatherFragment extends Fragment {
             mSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
                 @Override
                 public void onRefresh(RefreshLayout refreshlayout) {
-                    mSmartRefreshLayout.finishRefresh(1000);
+                    if (mCallBackUpdateToActivity != null) {
+                        mCallBackUpdateToActivity.UpdateFragment();
+                    }
                 }
             });
         }
@@ -191,5 +190,13 @@ public class WeatherFragment extends Fragment {
 
     public String getFragmentWeatherId() {
         return this.mWeather.getHeWeather().get(0).getBasic().getId();
+    }
+
+    public interface CallBackToActivity {
+        void UpdateFragment();
+    }
+
+    public void setCallBackToActivity(CallBackToActivity callBackToActivity) {
+        this.mCallBackUpdateToActivity = callBackToActivity;
     }
 }

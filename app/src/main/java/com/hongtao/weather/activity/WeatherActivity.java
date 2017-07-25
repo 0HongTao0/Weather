@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.hongtao.weather.DateBase.PlaceDatabaseDeal;
@@ -42,6 +43,7 @@ import com.hongtao.weather.util.NetwordUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class WeatherActivity extends AppCompatActivity {
 
@@ -51,8 +53,10 @@ public class WeatherActivity extends AppCompatActivity {
     private RecyclerView mRvPlace;
     private NavigationView mNavigationView;
     private List<Fragment> mFragments = new ArrayList<>();
+    private List<Place> mPlaceList = new ArrayList<>();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
-    private PlaceAdapter mPlaceAdapter = new PlaceAdapter();
+    private static PlaceAdapter mPlaceAdapter = new PlaceAdapter();
+    private static WeatherViewPagerAdapter mWeatherViewPagerAdapter;
 
     private final static String PLACE_ADDRESS = "http://guolin.tech/api/china";
     private final static String PLACE_TYPE_PROVINCE = "Province";
@@ -108,10 +112,10 @@ public class WeatherActivity extends AppCompatActivity {
                 Weather weather = gson.fromJson(s, Weather.class);
                 WeatherFragment fragment = new WeatherFragment();
                 fragment.setOnlineDataInFragment(weather);
+                setFragmentListener(fragment);
                 mFragments.add(fragment);
-                WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
-                mVpWeather.setAdapter(adapter);
-                mVpWeather.setCurrentItem(mFragments.size());
+                mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
+                mVpWeather.setAdapter(mWeatherViewPagerAdapter);
                 updateNotification(weather);
                 saveNowWeatherInSP(weather);
             }
@@ -170,13 +174,20 @@ public class WeatherActivity extends AppCompatActivity {
         return nowWeather;
     }
 
+    /**
+     * 将设置的天气 ID 存入 SharePreferences
+     * @param weatherId
+     */
     private void saveNowWeatherIdInSP(String weatherId) {
         SharedPreferences.Editor editor = getSharedPreferences("now", MODE_PRIVATE).edit();
         editor.putString("now_weather_id", weatherId);
         editor.apply();
     }
 
-
+    /**
+     * 更新状态栏通知
+     * @param weather
+     */
     private void updateNotification(Weather weather) {
         List<String> msgList = new ArrayList<>();
         msgList.add(weather.getHeWeather().get(0).getBasic().getCity());
@@ -191,6 +202,9 @@ public class WeatherActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 展示地方列表并且处理监听回调
+     */
     private void displayPlaceList() {
         if (!PlaceDatabaseDeal.isTableExit()) {
             saveProvinceInDatabase();
@@ -231,6 +245,9 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 初始化控件
+     */
     private void initView() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.weather_dl);
         mNavigationView = (NavigationView) findViewById(R.id.weather_nv_place);
@@ -254,7 +271,7 @@ public class WeatherActivity extends AppCompatActivity {
         DiyGSONRequest<Province> request = new DiyGSONRequest<>(PLACE_ADDRESS, Province.class, new Response.Listener<List<Province>>() {
             @Override
             public void onResponse(List<Province> provinces) {
-                List<Place> placeList = new ArrayList<>();
+                mPlaceList.clear();
                 for (int i = 0; i < provinces.size(); i++) {
                     Place place = new Place();
                     place.setAboveId("nothing");
@@ -262,10 +279,10 @@ public class WeatherActivity extends AppCompatActivity {
                     place.setId(provinces.get(i).getId());
                     place.setName(provinces.get(i).getName());
                     place.setPlaceType(PLACE_TYPE_PROVINCE);
-                    placeList.add(place);
+                    mPlaceList.add(place);
                 }
-                updateRecyclerView(placeList, mRvPlace, mPlaceAdapter);
-                PlaceDatabaseDeal.addPlace(placeList);
+                updateRecyclerView(mPlaceList, mRvPlace, mPlaceAdapter);
+                PlaceDatabaseDeal.addPlace(mPlaceList);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -286,7 +303,7 @@ public class WeatherActivity extends AppCompatActivity {
         DiyGSONRequest<City> request = new DiyGSONRequest<>(PLACE_ADDRESS + "/" + place.getId(), City.class, new Response.Listener<List<City>>() {
             @Override
             public void onResponse(List<City> cities) {
-                List<Place> placeList = new ArrayList<>();
+                mPlaceList.clear();
                 for (int i = 0; i < cities.size(); i++) {
                     Place place = new Place();
                     place.setAboveId(aboveId);
@@ -294,10 +311,10 @@ public class WeatherActivity extends AppCompatActivity {
                     place.setId(cities.get(i).getId());
                     place.setName(cities.get(i).getName());
                     place.setPlaceType(PLACE_TYPE_CITY);
-                    placeList.add(place);
+                    mPlaceList.add(place);
                 }
-                updateRecyclerView(placeList, mRvPlace, mPlaceAdapter);
-                PlaceDatabaseDeal.addPlace(placeList);
+                updateRecyclerView(mPlaceList, mRvPlace, mPlaceAdapter);
+                PlaceDatabaseDeal.addPlace(mPlaceList);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -320,7 +337,7 @@ public class WeatherActivity extends AppCompatActivity {
         DiyGSONRequest<District> request = new DiyGSONRequest<>(address.toString(), District.class, new Response.Listener<List<District>>() {
             @Override
             public void onResponse(List<District> districts) {
-                List<Place> placeList = new ArrayList<>();
+                mPlaceList.clear();
                 for (int i = 0; i < districts.size(); i++) {
                     Place place = new Place();
                     place.setAboveId(aboveId);
@@ -328,10 +345,10 @@ public class WeatherActivity extends AppCompatActivity {
                     place.setId(districts.get(i).getId());
                     place.setName(districts.get(i).getName());
                     place.setPlaceType(PLACE_TYPE_DISTRICT);
-                    placeList.add(place);
+                    mPlaceList.add(place);
                 }
-                updateRecyclerView(placeList, mRvPlace, mPlaceAdapter);
-                PlaceDatabaseDeal.addPlace(placeList);
+                updateRecyclerView(mPlaceList, mRvPlace, mPlaceAdapter);
+                PlaceDatabaseDeal.addPlace(mPlaceList);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -364,13 +381,53 @@ public class WeatherActivity extends AppCompatActivity {
      * @return
      */
     private Boolean isPlaceDisplay(String weatherId) {
-        List<Fragment> fragments = mFragmentManager.getFragments();
-        for (int i = 0; i < fragments.size(); i++) {
-            WeatherFragment weatherFragment = (WeatherFragment) fragments.get(i);
+        for (int i = 0; i < mFragments.size(); i++) {
+            WeatherFragment weatherFragment = (WeatherFragment) mFragments.get(i);
             if (weatherFragment.getFragmentWeatherId().equals(weatherId)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * 用于下拉更新天气（所选的全部地区）
+     *
+     * @param weatherFragment
+     */
+    private void setFragmentListener(WeatherFragment weatherFragment) {
+        weatherFragment.setCallBackToActivity(new WeatherFragment.CallBackToActivity() {
+            @Override
+            public void UpdateFragment() {
+                final List<Fragment> fragments = new ArrayList<>();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < mFragments.size(); i++) {
+                            WeatherFragment fragment = (WeatherFragment) mFragments.get(i);
+                            RequestFuture requestFuture = RequestFuture.newFuture();
+                            StringRequest stringRequest = new StringRequest(WEATHER_ADDRESS + fragment.getFragmentWeatherId() + WEATHER_KEY, requestFuture, requestFuture);
+                            try {
+                                Weather weather = new Gson().fromJson((String) requestFuture.get(), Weather.class);
+                                WeatherFragment newFragment = new WeatherFragment();
+                                newFragment.setOnlineDataInFragment(weather);
+                                fragments.add(newFragment);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+                            WeatherApplication.getRequestQueue().add(stringRequest);
+                        }
+                        mFragments.clear();
+                        mFragments.addAll(fragments);
+                        fragments.clear();
+                    }
+                }).start();
+                mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
+                mVpWeather.setAdapter(mWeatherViewPagerAdapter);
+                Toast.makeText(WeatherActivity.this, "已经把展示的地点天气更新", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
