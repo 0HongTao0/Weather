@@ -8,6 +8,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ import java.util.List;
  * mobile：18306620711
  */
 public class WeatherFragment extends Fragment {
-    private TextView mTvName, mTvNowTemperature, mTvNowWindDirection, mTvNowWindSpeed;
+    private TextView mTvName, mTvNowTemperature, mTvNowWindDirection, mTvNowWindSpeed, mTvSuggestion;
     private NetworkImageView mNivNowSky;
     private RecyclerView mRvDailyForecast, mRvHourForecast;
     private SmartRefreshLayout mSmartRefreshLayout;
@@ -53,6 +54,7 @@ public class WeatherFragment extends Fragment {
     private static final int UPDATE_WEATHER_NOW = 1;
     private static final int UPDATE_WEATHER_DAILY_FORECAST = 2;
     private static final int UPDATE_WEATHER_HOURLY_FORECAST = 3;
+    private static final int UPDATE_WEATHER_SUGGESTION_MESSAGE = 4;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -91,6 +93,9 @@ public class WeatherFragment extends Fragment {
                     mRvHourForecast.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
                     mRvHourForecast.setAdapter(hourForecastAdapter);
                     break;
+                case UPDATE_WEATHER_SUGGESTION_MESSAGE:
+                    mTvSuggestion.setText((String) msg.obj);
+                    break;
             }
         }
     };
@@ -103,6 +108,7 @@ public class WeatherFragment extends Fragment {
             showNowWeather(mWeather);
             showHourForecastWeather(mWeather);
             showDailyForecastWeather(mWeather);
+            showSuggestion(mWeather);
         } else {
             HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_NOW, mNowWeather);
         }
@@ -126,6 +132,7 @@ public class WeatherFragment extends Fragment {
     }
 
     private void initView(View view) {
+        mTvSuggestion = (TextView) view.findViewById(R.id.weather_tv_scroll_text);
         mTvName = (TextView) view.findViewById(R.id.weather_tv_where);
         mTvNowTemperature = (TextView) view.findViewById(R.id.now_tv_temperature);
         mTvNowWindDirection = (TextView) view.findViewById(R.id.now_tv_winddirection);
@@ -140,6 +147,7 @@ public class WeatherFragment extends Fragment {
             mSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
                 @Override
                 public void onRefresh(RefreshLayout refreshlayout) {
+                    refreshlayout.finishLoadmore(2000);
                     if (mCallBackUpdateToActivity != null) {
                         mCallBackUpdateToActivity.UpdateFragment();
                     }
@@ -186,6 +194,20 @@ public class WeatherFragment extends Fragment {
             hourForecasts.add(hourForecast);
         }
         HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_HOURLY_FORECAST, hourForecasts);
+    }
+
+    private void showSuggestion(Weather weather) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Weather.HeWeatherBean.SuggestionBean suggestionBean = weather.getHeWeather().get(0).getSuggestion();
+        stringBuilder.append(suggestionBean.getAir().getTxt())
+                .append(suggestionBean.getComf().getTxt())
+                .append(suggestionBean.getCw().getTxt())
+                .append(suggestionBean.getDrsg().getTxt())
+                .append(suggestionBean.getFlu().getTxt())
+                .append(suggestionBean.getSport().getTxt())
+                .append(suggestionBean.getTrav().getTxt())
+                .append(suggestionBean.getUv().getTxt());
+        HandlerUtil.sendMessageToHandler(mHandler, UPDATE_WEATHER_SUGGESTION_MESSAGE, stringBuilder.toString());
     }
 
     public String getFragmentWeatherId() {

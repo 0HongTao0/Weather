@@ -37,6 +37,7 @@ import com.hongtao.weather.bean.Weather;
 import com.hongtao.weather.fragment.LoadFragment;
 import com.hongtao.weather.fragment.WeatherFragment;
 import com.hongtao.weather.service.ShowService;
+import com.hongtao.weather.util.DepthPageTransformer;
 import com.hongtao.weather.util.DividerItemDecoration;
 import com.hongtao.weather.util.DiyGSONRequest;
 import com.hongtao.weather.util.NetwordUtil;
@@ -109,15 +110,20 @@ public class WeatherActivity extends AppCompatActivity {
                     }
                 }).start();
                 Gson gson = new Gson();
-                Weather weather = gson.fromJson(s, Weather.class);
-                WeatherFragment fragment = new WeatherFragment();
-                fragment.setOnlineDataInFragment(weather);
-                setFragmentListener(fragment);
-                mFragments.add(fragment);
-                mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
-                mVpWeather.setAdapter(mWeatherViewPagerAdapter);
-                updateNotification(weather);
-                saveNowWeatherInSP(weather);
+                try{
+                    Weather weather = gson.fromJson(s, Weather.class);
+                    WeatherFragment fragment = new WeatherFragment();
+                    fragment.setOnlineDataInFragment(weather);
+                    setFragmentListener(fragment);
+                    mFragments.add(fragment);
+                    mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
+                    mVpWeather.setAdapter(mWeatherViewPagerAdapter);
+                    updateNotification(weather);
+                    saveNowWeatherInSP(weather);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -257,6 +263,7 @@ public class WeatherActivity extends AppCompatActivity {
         mNavigationView = (NavigationView) findViewById(R.id.weather_nv_place);
         mRvPlace = (RecyclerView) mNavigationView.getHeaderView(0).findViewById(R.id.weather_rv_choose);
         mVpWeather = (ViewPager) findViewById(R.id.weather_vp_message);
+        mVpWeather.setPageTransformer(true,new DepthPageTransformer());
         FloatingActionButton mBtChoose = (FloatingActionButton) findViewById(R.id.weather_bt_choose);
         mBtChoose.setOnClickListener(new View.OnClickListener() {
             @Override

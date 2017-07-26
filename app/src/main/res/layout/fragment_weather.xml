@@ -7,6 +7,10 @@
     android:background="@drawable/background"
     tools:context="com.hongtao.weather.activity.WeatherActivity">
 
+    <com.scwang.smartrefresh.layout.header.ClassicsHeader
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -43,6 +47,20 @@
                 android:gravity="center"
                 android:textColor="@color/White"
                 android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/weather_tv_scroll_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:gravity="center"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:textColor="@color/White"
+                android:textSize="30sp"/>
 
             <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/now_iv_niv_sky"
