@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -48,6 +49,7 @@ import java.util.concurrent.ExecutionException;
 
 public class WeatherActivity extends AppCompatActivity {
 
+    private TabLayout mTabLayout;
     private DrawerLayout mDrawerLayout;
     private UpdateStatusReceiver mReceiver;
     private ViewPager mVpWeather;
@@ -56,7 +58,7 @@ public class WeatherActivity extends AppCompatActivity {
     private List<Fragment> mFragments = new ArrayList<>();
     private List<Place> mPlaceList = new ArrayList<>();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
-    private static PlaceAdapter mPlaceAdapter = new PlaceAdapter();
+    private static PlaceAdapter mPlaceAdapter;
     private static WeatherViewPagerAdapter mWeatherViewPagerAdapter;
 
     private final static String PLACE_ADDRESS = "http://guolin.tech/api/china";
@@ -82,6 +84,7 @@ public class WeatherActivity extends AppCompatActivity {
         }
 
         if (NetwordUtil.netIsWork(WeatherActivity.this)) {
+            mPlaceAdapter = new PlaceAdapter();
             displayPlaceList();
             IntentFilter mIntentFilter = new IntentFilter();
             mIntentFilter.addAction("com.weather.update");
@@ -110,20 +113,15 @@ public class WeatherActivity extends AppCompatActivity {
                     }
                 }).start();
                 Gson gson = new Gson();
-                try{
-                    Weather weather = gson.fromJson(s, Weather.class);
-                    WeatherFragment fragment = new WeatherFragment();
-                    fragment.setOnlineDataInFragment(weather);
-                    setFragmentListener(fragment);
-                    mFragments.add(fragment);
-                    mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
-                    mVpWeather.setAdapter(mWeatherViewPagerAdapter);
-                    updateNotification(weather);
-                    saveNowWeatherInSP(weather);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
+                Weather weather = gson.fromJson(s, Weather.class);
+                WeatherFragment fragment = new WeatherFragment();
+                fragment.setOnlineDataInFragment(weather);
+                setFragmentListener(fragment);
+                mFragments.add(fragment);
+                mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
+                mVpWeather.setAdapter(mWeatherViewPagerAdapter);
+                updateNotification(weather);
+                saveNowWeatherInSP(weather);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -171,6 +169,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 从 SharePreferences 中去到缓存的 NowWeather 信息
+     *
      * @return
      */
     private NowWeather getNowWeatherFromSP() {
@@ -186,6 +185,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 将设置的天气 ID 存入 SharePreferences
+     *
      * @param weatherId
      */
     private void saveNowWeatherIdInSP(String weatherId) {
@@ -196,6 +196,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 更新状态栏通知
+     *
      * @param weather
      */
     private void updateNotification(Weather weather) {
@@ -259,11 +260,12 @@ public class WeatherActivity extends AppCompatActivity {
      * 初始化控件
      */
     private void initView() {
+        mTabLayout = (TabLayout) findViewById(R.id.weather_tl_tab);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.weather_dl);
         mNavigationView = (NavigationView) findViewById(R.id.weather_nv_place);
         mRvPlace = (RecyclerView) mNavigationView.getHeaderView(0).findViewById(R.id.weather_rv_choose);
         mVpWeather = (ViewPager) findViewById(R.id.weather_vp_message);
-        mVpWeather.setPageTransformer(true,new DepthPageTransformer());
+        mVpWeather.setPageTransformer(true, new DepthPageTransformer());
         FloatingActionButton mBtChoose = (FloatingActionButton) findViewById(R.id.weather_bt_choose);
         mBtChoose.setOnClickListener(new View.OnClickListener() {
             @Override

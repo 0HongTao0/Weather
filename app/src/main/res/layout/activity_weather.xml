@@ -11,6 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <android.support.design.widget.TabLayout
+            android:id="@+id/weather_tl_tab"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_gravity="top"
+            android:gravity="center">
+
+        </android.support.design.widget.TabLayout>
+
     </android.support.v4.view.ViewPager>
 
     <FrameLayout
@@ -27,11 +36,11 @@
     </FrameLayout>
 
     <android.support.design.widget.NavigationView
-        android:background="@drawable/bc"
         android:id="@+id/weather_nv_place"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@drawable/bc"
         app:headerLayout="@layout/navigation_weather"/>
 
 
