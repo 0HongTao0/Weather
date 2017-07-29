@@ -168,7 +168,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     /**
-     * 从 SharePreferences 中去到缓存的 NowWeather 信息
+     * 从 SharePreferences 中取出缓存的 NowWeather 信息
      *
      * @return
      */
