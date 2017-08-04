@@ -41,7 +41,7 @@
                 android:textSize="120sp"/>
 
             <TextView
-                android:id="@+id/now_tv_winddirection"
+                android:id="@+id/now_tv_wind_direction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -87,7 +87,7 @@
                 android:textColor="@color/White"/>
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/hourforecast_rv_weather"
+                android:id="@+id/hour_forecast_rv_weather"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:ignore="NestedScrolling">

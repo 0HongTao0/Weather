@@ -33,6 +33,10 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 
 /**
  * author：hongtao on 2017/7/21/021 18:07
@@ -40,10 +44,26 @@ import java.util.List;
  * mobile：18306620711
  */
 public class WeatherFragment extends Fragment {
-    private TextView mTvName, mTvNowTemperature, mTvNowWindDirection, mTvNowWindSpeed, mTvSuggestion;
-    private NetworkImageView mNivNowSky;
-    private RecyclerView mRvDailyForecast, mRvHourForecast;
-    private SmartRefreshLayout mSmartRefreshLayout;
+    @BindView(R.id.weather_tv_where)
+    TextView mWeatherTvWhere;
+    @BindView(R.id.now_tv_temperature)
+    TextView mNowTvTemperature;
+    @BindView(R.id.now_tv_wind_direction)
+    TextView mNowTvWindDirection;
+    @BindView(R.id.now_iv_niv_sky)
+    NetworkImageView mNowIvNivSky;
+    @BindView(R.id.now_tv_air)
+    TextView mNowTvAir;
+    @BindView(R.id.dailyforecast_rv_weather)
+    RecyclerView mDailyforecastRvWeather;
+    @BindView(R.id.hour_forecast_rv_weather)
+    RecyclerView mHourForecastRvWeather;
+    @BindView(R.id.weather_tv_scroll_text)
+    TextView mWeatherTvScrollText;
+    @BindView(R.id.weather_sl_refresh)
+    SmartRefreshLayout mWeatherSlRefresh;
+    Unbinder unbinder;
+
     private Weather mWeather;
     private NowWeather mNowWeather;
     private CallBackToActivity mCallBackUpdateToActivity;
@@ -61,10 +81,10 @@ public class WeatherFragment extends Fragment {
             switch (msg.what) {
                 case UPDATE_WEATHER_NOW:
                     NowWeather nowWeather = (NowWeather) msg.obj;
-                    mTvName.setText(nowWeather.getCity());
-                    mTvNowTemperature.setText(nowWeather.getTemperature() + "°");
-                    mTvNowWindSpeed.setText(nowWeather.getAir());
-                    mTvNowWindDirection.setText(nowWeather.getWindDirection());
+                    mWeatherTvWhere.setText(nowWeather.getCity());
+                    mNowTvTemperature.setText(nowWeather.getTemperature() + "°");
+                    mNowTvAir.setText(nowWeather.getAir());
+                    mNowTvWindDirection.setText(nowWeather.getWindDirection());
                     ImageLoader imageLoader = new ImageLoader(WeatherApplication.getRequestQueue(), new ImageLoader.ImageCache() {
                         @Override
                         public Bitmap getBitmap(String s) {
@@ -76,24 +96,24 @@ public class WeatherFragment extends Fragment {
 
                         }
                     });
-                    mNivNowSky.setImageUrl(ICON_ADDRESS + nowWeather.getSky() + ".png", imageLoader);
+                    mNowIvNivSky.setImageUrl(ICON_ADDRESS + nowWeather.getSky() + ".png", imageLoader);
                     break;
                 case UPDATE_WEATHER_DAILY_FORECAST:
                     DailyForecastAdapter dailyForecastAdapter = new DailyForecastAdapter((List<DailyForecast>) msg.obj);
                     LinearLayoutManager dailyLayoutManager = new LinearLayoutManager(getContext());
-                    mRvDailyForecast.setLayoutManager(dailyLayoutManager);
-                    mRvDailyForecast.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
-                    mRvDailyForecast.setAdapter(dailyForecastAdapter);
+                    mDailyforecastRvWeather.setLayoutManager(dailyLayoutManager);
+                    mDailyforecastRvWeather.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
+                    mDailyforecastRvWeather.setAdapter(dailyForecastAdapter);
                     break;
                 case UPDATE_WEATHER_HOURLY_FORECAST:
                     HourForecastAdapter hourForecastAdapter = new HourForecastAdapter((List<HourForecast>) msg.obj);
                     LinearLayoutManager hourLayoutManager = new LinearLayoutManager(getContext());
-                    mRvHourForecast.setLayoutManager(hourLayoutManager);
-                    mRvHourForecast.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
-                    mRvHourForecast.setAdapter(hourForecastAdapter);
+                    mHourForecastRvWeather.setLayoutManager(hourLayoutManager);
+                    mHourForecastRvWeather.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
+                    mHourForecastRvWeather.setAdapter(hourForecastAdapter);
                     break;
                 case UPDATE_WEATHER_SUGGESTION_MESSAGE:
-                    mTvSuggestion.setText((String) msg.obj);
+                    mWeatherTvScrollText.setText((String) msg.obj);
                     break;
             }
         }
@@ -118,7 +138,8 @@ public class WeatherFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
-        initView(view);
+        unbinder = ButterKnife.bind(this, view);
+        initView();
         return view;
     }
 
@@ -142,20 +163,11 @@ public class WeatherFragment extends Fragment {
         this.mNowWeather = nowWeather;
     }
 
-    private void initView(View view) {
-        mTvSuggestion = (TextView) view.findViewById(R.id.weather_tv_scroll_text);
-        mTvName = (TextView) view.findViewById(R.id.weather_tv_where);
-        mTvNowTemperature = (TextView) view.findViewById(R.id.now_tv_temperature);
-        mTvNowWindDirection = (TextView) view.findViewById(R.id.now_tv_winddirection);
-        mTvNowWindSpeed = (TextView) view.findViewById(R.id.now_tv_air);
-        mSmartRefreshLayout = (SmartRefreshLayout) view.findViewById(R.id.weather_sl_refresh);
-        mRvDailyForecast = (RecyclerView) view.findViewById(R.id.dailyforecast_rv_weather);
-        mRvHourForecast = (RecyclerView) view.findViewById(R.id.hourforecast_rv_weather);
-        mRvHourForecast.setNestedScrollingEnabled(false);
-        mRvHourForecast.setNestedScrollingEnabled(false);
-        mNivNowSky = (NetworkImageView) view.findViewById(R.id.now_iv_niv_sky);
+    private void initView() {
+        mHourForecastRvWeather.setNestedScrollingEnabled(false);
+        mHourForecastRvWeather.setNestedScrollingEnabled(false);
         if (NetwordUtil.netIsWork(getActivity())) {
-            mSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            mWeatherSlRefresh.setOnRefreshListener(new OnRefreshListener() {
                 @Override
                 public void onRefresh(RefreshLayout refreshlayout) {
                     refreshlayout.finishLoadmore(2000);
@@ -223,6 +235,12 @@ public class WeatherFragment extends Fragment {
 
     public String getFragmentWeatherId() {
         return this.mWeather.getHeWeather().get(0).getBasic().getId();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     public interface CallBackToActivity {

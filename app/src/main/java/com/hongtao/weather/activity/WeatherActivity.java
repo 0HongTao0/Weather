@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.HandlerThread;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -48,14 +47,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class WeatherActivity extends AppCompatActivity {
 
-    private TabLayout mTabLayout;
-    private DrawerLayout mDrawerLayout;
+    @BindView(R.id.weather_tl_tab)
+    TabLayout mWeatherTlTab;
+    @BindView(R.id.weather_vp_message)
+    ViewPager mWeatherVpMessage;
+    @BindView(R.id.weather_bt_choose)
+    FloatingActionButton mWeatherBtChoose;
+    @BindView(R.id.weather_nv_place)
+    NavigationView mWeatherNvPlace;
+    @BindView(R.id.weather_dl)
+    DrawerLayout mWeatherDl;
+
     private UpdateStatusReceiver mReceiver;
-    private ViewPager mVpWeather;
     private RecyclerView mRvPlace;
-    private NavigationView mNavigationView;
     private List<Fragment> mFragments = new ArrayList<>();
     private List<Place> mPlaceList = new ArrayList<>();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
@@ -90,6 +99,7 @@ public class WeatherActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+        ButterKnife.bind(this);
         initView();
         if (!getSharedPreferences(SP_NOW, MODE_PRIVATE).getString(NOW_WEATHER_ID, NOTHING).equals(NOTHING)) {
             SharedPreferences sharedPreferences = getSharedPreferences(SP_NOW, MODE_PRIVATE);
@@ -109,7 +119,7 @@ public class WeatherActivity extends AppCompatActivity {
             WeatherFragment weatherFragment = WeatherFragment.newInstance(nowWeather);
             mFragments.add(weatherFragment);
             WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
-            mVpWeather.setAdapter(adapter);
+            mWeatherVpMessage.setAdapter(adapter);
         }
     }
 
@@ -130,7 +140,7 @@ public class WeatherActivity extends AppCompatActivity {
                 setFragmentListener(fragment);
                 mFragments.add(fragment);
                 mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
-                mVpWeather.setAdapter(mWeatherViewPagerAdapter);
+                mWeatherVpMessage.setAdapter(mWeatherViewPagerAdapter);
                 updateNotification(weather);
                 saveNowWeatherInSP(weather);
             }
@@ -166,8 +176,6 @@ public class WeatherActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(mReceiver);
     }
-
-
 
 
     private void saveNowWeatherInSP(Weather weather) {
@@ -258,7 +266,7 @@ public class WeatherActivity extends AppCompatActivity {
                             showWeather(place.getWeatherId());
                             nowWeatherId = place.getWeatherId();
                         }
-                        mDrawerLayout.closeDrawer(mNavigationView);
+                        mWeatherDl.closeDrawer(mWeatherNvPlace);
                         updateRecyclerView(PlaceDatabaseDeal.searchPlaceByCityType(PLACE_TYPE_PROVINCE), mRvPlace, mPlaceAdapter);
                         break;
                 }
@@ -270,18 +278,13 @@ public class WeatherActivity extends AppCompatActivity {
      * 初始化控件
      */
     private void initView() {
-        mTabLayout = (TabLayout) findViewById(R.id.weather_tl_tab);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.weather_dl);
-        mNavigationView = (NavigationView) findViewById(R.id.weather_nv_place);
-        mRvPlace = (RecyclerView) mNavigationView.getHeaderView(0).findViewById(R.id.weather_rv_choose);
-        mVpWeather = (ViewPager) findViewById(R.id.weather_vp_message);
-        mVpWeather.setPageTransformer(true, new DepthPageTransformer());
-        FloatingActionButton mBtChoose = (FloatingActionButton) findViewById(R.id.weather_bt_choose);
-        mBtChoose.setOnClickListener(new View.OnClickListener() {
+        mRvPlace = (RecyclerView) mWeatherNvPlace.getHeaderView(0).findViewById(R.id.weather_rv_choose);
+        mWeatherVpMessage.setPageTransformer(true, new DepthPageTransformer());
+        mWeatherBtChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(WeatherActivity.this, "已经设置该城市为当前城市", Toast.LENGTH_SHORT).show();
-                WeatherFragment fragment = (WeatherFragment) mFragmentManager.getFragments().get(mVpWeather.getCurrentItem());
+                WeatherFragment fragment = (WeatherFragment) mFragmentManager.getFragments().get(mWeatherVpMessage.getCurrentItem());
                 saveNowWeatherIdInSP(fragment.getFragmentWeatherId());
             }
         });
@@ -443,7 +446,7 @@ public class WeatherActivity extends AppCompatActivity {
                     }
                 }).start();
                 mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
-                mVpWeather.setAdapter(mWeatherViewPagerAdapter);
+                mWeatherVpMessage.setAdapter(mWeatherViewPagerAdapter);
                 Toast.makeText(WeatherActivity.this, "已经把展示的地点天气更新", Toast.LENGTH_SHORT).show();
             }
         });
