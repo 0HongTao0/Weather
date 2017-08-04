@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.HandlerThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -72,15 +73,27 @@ public class WeatherActivity extends AppCompatActivity {
 
     private String nowWeatherId = "CN101280101";  //广州天气ID
 
+    private static final String NOTHING = "nothing";
+
+    private static final String SP_DATA = "data";
+    private static final String NOW_WEATHER_CITY = "now_weather_city";
+    private static final String NOW_WEATHER_TEMPERATURE = "now_weather_temperature";
+    private static final String NOW_WEATHER_SKY = "now_weather_sky";
+    private static final String NOW_WEATHER_WIND_DIRECTION = "now_weather_wind_direction";
+    private static final String NOW_WEATHER_AIR = "now_weather_air";
+
+    private static final String NOW_WEATHER_ID = "now_weather_id";
+    private static final String SP_NOW = "now";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         initView();
-        if (!getSharedPreferences("now", MODE_PRIVATE).getString("now_weather_id", "nothing").equals("nothing")) {
-            SharedPreferences sharedPreferences = getSharedPreferences("now", MODE_PRIVATE);
-            nowWeatherId = sharedPreferences.getString("now_weather_id", "");
+        if (!getSharedPreferences(SP_NOW, MODE_PRIVATE).getString(NOW_WEATHER_ID, NOTHING).equals(NOTHING)) {
+            SharedPreferences sharedPreferences = getSharedPreferences(SP_NOW, MODE_PRIVATE);
+            nowWeatherId = sharedPreferences.getString(NOW_WEATHER_ID, "");
         }
 
         if (NetwordUtil.netIsWork(WeatherActivity.this)) {
@@ -93,8 +106,7 @@ public class WeatherActivity extends AppCompatActivity {
             showWeather(nowWeatherId);
         } else {
             NowWeather nowWeather = getNowWeatherFromSP();
-            WeatherFragment weatherFragment = new WeatherFragment();
-            weatherFragment.setOfflineDataInFragment(nowWeather);
+            WeatherFragment weatherFragment = WeatherFragment.newInstance(nowWeather);
             mFragments.add(weatherFragment);
             WeatherViewPagerAdapter adapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
             mVpWeather.setAdapter(adapter);
@@ -114,8 +126,7 @@ public class WeatherActivity extends AppCompatActivity {
                 }).start();
                 Gson gson = new Gson();
                 Weather weather = gson.fromJson(s, Weather.class);
-                WeatherFragment fragment = new WeatherFragment();
-                fragment.setOnlineDataInFragment(weather);
+                WeatherFragment fragment = WeatherFragment.newInstance(weather);
                 setFragmentListener(fragment);
                 mFragments.add(fragment);
                 mWeatherViewPagerAdapter = new WeatherViewPagerAdapter(mFragmentManager, mFragments);
@@ -157,47 +168,46 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
 
+
+
     private void saveNowWeatherInSP(Weather weather) {
-        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
-        editor.putString("now_weather_city", weather.getHeWeather().get(0).getBasic().getCity());
-        editor.putString("now_weather_temperature", weather.getHeWeather().get(0).getNow().getTemperature());
-        editor.putString("now_weather_sky", weather.getHeWeather().get(0).getNow().getCond().getCode());
-        editor.putString("now_weather_wind_direction", weather.getHeWeather().get(0).getNow().getWind().getWindDirection());
-        editor.putString("now_weather_air", weather.getHeWeather().get(0).getAqi().getCity().getQlty());
+        SharedPreferences.Editor editor = getSharedPreferences(SP_DATA, MODE_PRIVATE).edit();
+        editor.putString(NOW_WEATHER_CITY, weather.getHeWeather().get(0).getBasic().getCity());
+        editor.putString(NOW_WEATHER_TEMPERATURE, weather.getHeWeather().get(0).getNow().getTemperature());
+        editor.putString(NOW_WEATHER_SKY, weather.getHeWeather().get(0).getNow().getCond().getCode());
+        editor.putString(NOW_WEATHER_WIND_DIRECTION, weather.getHeWeather().get(0).getNow().getWind().getWindDirection());
+        editor.putString(NOW_WEATHER_AIR, weather.getHeWeather().get(0).getAqi().getCity().getQlty());
         editor.apply();
     }
+
 
     /**
      * 从 SharePreferences 中取出缓存的 NowWeather 信息
      *
-     * @return
+     * @return nowWeather
      */
     private NowWeather getNowWeatherFromSP() {
-        SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(SP_DATA, MODE_PRIVATE);
         NowWeather nowWeather = new NowWeather();
-        nowWeather.setCity(sharedPreferences.getString("now_weather_city", ""));
-        nowWeather.setTemperature(sharedPreferences.getString("now_weather_temperature", ""));
-        nowWeather.setSky(sharedPreferences.getString("now_weather_sky", ""));
-        nowWeather.setWindDirection(sharedPreferences.getString("now_weather_wind_direction", ""));
-        nowWeather.setAir(sharedPreferences.getString("now_weather_air", ""));
+        nowWeather.setCity(sharedPreferences.getString(NOW_WEATHER_CITY, ""));
+        nowWeather.setTemperature(sharedPreferences.getString(NOW_WEATHER_TEMPERATURE, ""));
+        nowWeather.setSky(sharedPreferences.getString(NOW_WEATHER_SKY, ""));
+        nowWeather.setWindDirection(sharedPreferences.getString(NOW_WEATHER_WIND_DIRECTION, ""));
+        nowWeather.setAir(sharedPreferences.getString(NOW_WEATHER_AIR, ""));
         return nowWeather;
     }
 
     /**
      * 将设置的天气 ID 存入 SharePreferences
-     *
-     * @param weatherId
      */
     private void saveNowWeatherIdInSP(String weatherId) {
-        SharedPreferences.Editor editor = getSharedPreferences("now", MODE_PRIVATE).edit();
-        editor.putString("now_weather_id", weatherId);
+        SharedPreferences.Editor editor = getSharedPreferences(SP_NOW, MODE_PRIVATE).edit();
+        editor.putString(NOW_WEATHER_ID, weatherId);
         editor.apply();
     }
 
     /**
      * 更新状态栏通知
-     *
-     * @param weather
      */
     private void updateNotification(Weather weather) {
         List<String> msgList = new ArrayList<>();
@@ -287,8 +297,8 @@ public class WeatherActivity extends AppCompatActivity {
                 mPlaceList.clear();
                 for (int i = 0; i < provinces.size(); i++) {
                     Place place = new Place();
-                    place.setAboveId("nothing");
-                    place.setWeatherId("nothing");
+                    place.setAboveId(NOTHING);
+                    place.setWeatherId(NOTHING);
                     place.setId(provinces.get(i).getId());
                     place.setName(provinces.get(i).getName());
                     place.setPlaceType(PLACE_TYPE_PROVINCE);
@@ -308,8 +318,6 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 把该 place 下的城市列表从网络端取下来并存入数据库
-     *
-     * @param place
      */
     private void saveCityInDatabase(Place place) {
         final String aboveId = place.getId();
@@ -320,7 +328,7 @@ public class WeatherActivity extends AppCompatActivity {
                 for (int i = 0; i < cities.size(); i++) {
                     Place place = new Place();
                     place.setAboveId(aboveId);
-                    place.setWeatherId("nothing");
+                    place.setWeatherId(NOTHING);
                     place.setId(cities.get(i).getId());
                     place.setName(cities.get(i).getName());
                     place.setPlaceType(PLACE_TYPE_CITY);
@@ -340,8 +348,6 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 把该 place 下的地区列表从网络上取下来并存入数据库
-     *
-     * @param place
      */
     private void saveDistrictInDatabase(Place place) {
         final String aboveId = place.getId();
@@ -422,8 +428,7 @@ public class WeatherActivity extends AppCompatActivity {
                             StringRequest stringRequest = new StringRequest(WEATHER_ADDRESS + fragment.getFragmentWeatherId() + WEATHER_KEY, requestFuture, requestFuture);
                             try {
                                 Weather weather = new Gson().fromJson((String) requestFuture.get(), Weather.class);
-                                WeatherFragment newFragment = new WeatherFragment();
-                                newFragment.setOnlineDataInFragment(weather);
+                                WeatherFragment newFragment = WeatherFragment.newInstance(weather);
                                 fragments.add(newFragment);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();

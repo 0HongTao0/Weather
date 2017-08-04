@@ -13,6 +13,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.hongtao.weather.R;
+import com.hongtao.weather.activity.WeatherApplication;
 import com.hongtao.weather.bean.DailyForecast;
 
 import java.lang.ref.WeakReference;
@@ -26,7 +27,6 @@ import java.util.List;
 public class DailyForecastAdapter extends RecyclerView.Adapter<DailyForecastAdapter.ViewHolder> {
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
     private List<DailyForecast> mDailyForecasts;
-    private WeakReference<Activity> mActivityWeakReference;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         NetworkImageView mIvNightSky, mIvDaySky;
@@ -43,9 +43,8 @@ public class DailyForecastAdapter extends RecyclerView.Adapter<DailyForecastAdap
         }
     }
 
-    public DailyForecastAdapter(Activity activity, List<DailyForecast> dailyForecasts) {
+    public DailyForecastAdapter(List<DailyForecast> dailyForecasts) {
         mDailyForecasts = dailyForecasts;
-        this.mActivityWeakReference = new WeakReference<>(activity);
     }
 
     @Override
@@ -62,7 +61,7 @@ public class DailyForecastAdapter extends RecyclerView.Adapter<DailyForecastAdap
         holder.mTvTemperature.setText(dailyForecast.getTemperature());
         holder.mTvWindDirection.setText(dailyForecast.getWindDirection());
         holder.mTvWindSpeed.setText(dailyForecast.getWindSpeed());
-        RequestQueue requestQueue = Volley.newRequestQueue(mActivityWeakReference.get());
+        RequestQueue requestQueue = Volley.newRequestQueue(WeatherApplication.getContext());
         ImageLoader imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
             @Override
             public Bitmap getBitmap(String s) {
@@ -80,6 +79,6 @@ public class DailyForecastAdapter extends RecyclerView.Adapter<DailyForecastAdap
 
     @Override
     public int getItemCount() {
-        return mDailyForecasts.size();
+        return mDailyForecasts == null ? 0 : mDailyForecasts.size();
     }
 }

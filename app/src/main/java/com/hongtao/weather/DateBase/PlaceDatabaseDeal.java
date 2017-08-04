@@ -12,13 +12,19 @@ import java.util.List;
 
 /**
  * 对数据库操作的类
- *
+ * <p>
  * author：hongtao on 2017/7/18/018 10:44
  * email：935245421@qq.com
  * mobile：18306620711
  */
 public class PlaceDatabaseDeal {
     private static final String DATABASE_PLACE_NAME = "Place.db";
+    private static final String PLACE_NAME = "name";
+    private static final String CITY_ID = "city_id";
+    private static final String ABOVE_ID = "above_id";
+    private static final String WEATHER_ID = "weather_id";
+    private static final String PLACE_TYPE = "place_type";
+
     private static PlaceDatabaseHelper mDatabaseHelper = new PlaceDatabaseHelper(WeatherApplication.getContext(), DATABASE_PLACE_NAME, null, 1);
     private static SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
 
@@ -42,6 +48,7 @@ public class PlaceDatabaseDeal {
 
     /**
      * 通过传入的 Place  Id 在数据库中查找
+     *
      * @param id
      * @return
      */
@@ -51,11 +58,11 @@ public class PlaceDatabaseDeal {
         if (cursor.moveToNext()) {
             do {
                 Place place = new Place();
-                place.setName(cursor.getString(cursor.getColumnIndex("name")));
-                place.setId(cursor.getString(cursor.getColumnIndex("city_id")));
-                place.setAboveId(cursor.getString(cursor.getColumnIndex("above_id")));
-                place.setWeatherId(cursor.getString(cursor.getColumnIndex("weather_id")));
-                place.setPlaceType(cursor.getString(cursor.getColumnIndex("place_type")));
+                place.setName(cursor.getString(cursor.getColumnIndex(PLACE_NAME)));
+                place.setId(cursor.getString(cursor.getColumnIndex(CITY_ID)));
+                place.setAboveId(cursor.getString(cursor.getColumnIndex(ABOVE_ID)));
+                place.setWeatherId(cursor.getString(cursor.getColumnIndex(WEATHER_ID)));
+                place.setPlaceType(cursor.getString(cursor.getColumnIndex(PLACE_TYPE)));
                 placeList.add(place);
             } while (cursor.moveToNext());
         }
@@ -63,8 +70,10 @@ public class PlaceDatabaseDeal {
         return placeList;
     }
 
+
     /**
      * 判断数据库中 Place 表是否存在
+     *
      * @return
      */
     public static Boolean isTableExit() {
@@ -78,6 +87,7 @@ public class PlaceDatabaseDeal {
 
     /**
      * 判断数据库中 above_id = place_id  和对应 place_type 的 Place 是否存在
+     *
      * @param placeId
      * @param placeType
      * @return
@@ -100,6 +110,7 @@ public class PlaceDatabaseDeal {
 
     /**
      * 通过 place_type 在数据库中查找
+     *
      * @param cityType
      * @return
      */
@@ -109,11 +120,11 @@ public class PlaceDatabaseDeal {
         if (cursor.moveToNext()) {
             do {
                 Place place = new Place();
-                place.setName(cursor.getString(cursor.getColumnIndex("name")));
-                place.setId(cursor.getString(cursor.getColumnIndex("city_id")));
-                place.setAboveId(cursor.getString(cursor.getColumnIndex("above_id")));
-                place.setWeatherId(cursor.getString(cursor.getColumnIndex("weather_id")));
-                place.setPlaceType(cursor.getString(cursor.getColumnIndex("place_type")));
+                place.setName(cursor.getString(cursor.getColumnIndex(PLACE_NAME)));
+                place.setId(cursor.getString(cursor.getColumnIndex(CITY_ID)));
+                place.setAboveId(cursor.getString(cursor.getColumnIndex(ABOVE_ID)));
+                place.setWeatherId(cursor.getString(cursor.getColumnIndex(WEATHER_ID)));
+                place.setPlaceType(cursor.getString(cursor.getColumnIndex(PLACE_TYPE)));
                 placeList.add(place);
             } while (cursor.moveToNext());
         }

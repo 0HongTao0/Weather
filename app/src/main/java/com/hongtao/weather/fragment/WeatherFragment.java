@@ -8,7 +8,6 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,14 +79,14 @@ public class WeatherFragment extends Fragment {
                     mNivNowSky.setImageUrl(ICON_ADDRESS + nowWeather.getSky() + ".png", imageLoader);
                     break;
                 case UPDATE_WEATHER_DAILY_FORECAST:
-                    DailyForecastAdapter dailyForecastAdapter = new DailyForecastAdapter(getActivity(), (List<DailyForecast>) msg.obj);
+                    DailyForecastAdapter dailyForecastAdapter = new DailyForecastAdapter((List<DailyForecast>) msg.obj);
                     LinearLayoutManager dailyLayoutManager = new LinearLayoutManager(getContext());
                     mRvDailyForecast.setLayoutManager(dailyLayoutManager);
                     mRvDailyForecast.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
                     mRvDailyForecast.setAdapter(dailyForecastAdapter);
                     break;
                 case UPDATE_WEATHER_HOURLY_FORECAST:
-                    HourForecastAdapter hourForecastAdapter = new HourForecastAdapter(getActivity(), (List<HourForecast>) msg.obj);
+                    HourForecastAdapter hourForecastAdapter = new HourForecastAdapter((List<HourForecast>) msg.obj);
                     LinearLayoutManager hourLayoutManager = new LinearLayoutManager(getContext());
                     mRvHourForecast.setLayoutManager(hourLayoutManager);
                     mRvHourForecast.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
@@ -123,11 +122,23 @@ public class WeatherFragment extends Fragment {
         return view;
     }
 
-    public void setOnlineDataInFragment(Weather weather) {
+    public static WeatherFragment newInstance(Weather weather) {
+        WeatherFragment weatherFragment = new WeatherFragment();
+        weatherFragment.setOnlineDataInFragment(weather);
+        return weatherFragment;
+    }
+
+    public static WeatherFragment newInstance(NowWeather nowWeather) {
+        WeatherFragment weatherFragment = new WeatherFragment();
+        weatherFragment.setOfflineDataInFragment(nowWeather);
+        return weatherFragment;
+    }
+
+    private void setOnlineDataInFragment(Weather weather) {
         this.mWeather = weather;
     }
 
-    public void setOfflineDataInFragment(NowWeather nowWeather) {
+    private void setOfflineDataInFragment(NowWeather nowWeather) {
         this.mNowWeather = nowWeather;
     }
 

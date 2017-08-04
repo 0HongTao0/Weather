@@ -9,6 +9,9 @@
     <string name="no_weather">暂无空气质量状况</string>
     <string name="air">空气质量</string>
     <string name="single_slash">/</string>
-    <string name="temperature">°</string>
+    <string name="degree">°</string>
+    <string name="speed">km/h</string>
+    <string name="to">~</string>
+    <string name="png">.png</string>
 
 </resources>

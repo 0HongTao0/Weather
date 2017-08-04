@@ -13,6 +13,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.hongtao.weather.R;
+import com.hongtao.weather.activity.WeatherApplication;
 import com.hongtao.weather.bean.HourForecast;
 
 import java.lang.ref.WeakReference;
@@ -25,7 +26,6 @@ import java.util.List;
  */
 public class HourForecastAdapter extends RecyclerView.Adapter<HourForecastAdapter.ViewHolder> {
     private static final String ICON_ADDRESS = "https://cdn.heweather.com/cond_icon/";
-    private WeakReference<Activity> mActivityWeakReference;
     private List<HourForecast> mHourForecastList;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -40,14 +40,13 @@ public class HourForecastAdapter extends RecyclerView.Adapter<HourForecastAdapte
         }
     }
 
-    public HourForecastAdapter(Activity activity, List<HourForecast> hourForecasts) {
-        this.mActivityWeakReference = new WeakReference<>(activity);
+    public HourForecastAdapter(List<HourForecast> hourForecasts) {
         this.mHourForecastList = hourForecasts;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mActivityWeakReference.get()).inflate(R.layout.itme_rv_hourforecast, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.itme_rv_hourforecast, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
@@ -57,7 +56,7 @@ public class HourForecastAdapter extends RecyclerView.Adapter<HourForecastAdapte
         HourForecast hourForecast = mHourForecastList.get(position);
         holder.mTvTemperature.setText(hourForecast.getTemperature());
         holder.mTvTime.setText(hourForecast.getTime().substring(10));
-        RequestQueue requestQueue = Volley.newRequestQueue(mActivityWeakReference.get());
+        RequestQueue requestQueue = Volley.newRequestQueue(WeatherApplication.getContext());
         ImageLoader imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
             @Override
             public Bitmap getBitmap(String s) {
@@ -74,6 +73,6 @@ public class HourForecastAdapter extends RecyclerView.Adapter<HourForecastAdapte
 
     @Override
     public int getItemCount() {
-        return mHourForecastList.size();
+        return mHourForecastList == null ? 0 : mHourForecastList.size();
     }
 }

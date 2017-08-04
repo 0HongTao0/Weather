@@ -39,6 +39,6 @@ public class WeatherViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return mFragmentList.size();
+        return mFragmentList == null ? 0 : mFragmentList.size();
     }
 }
