@@ -25,7 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
-import com.hongtao.weather.DateBase.PlaceDatabaseDeal;
+import com.hongtao.weather.dateBase.PlaceDatabaseDeal;
 import com.hongtao.weather.R;
 import com.hongtao.weather.adapter.PlaceAdapter;
 import com.hongtao.weather.adapter.WeatherViewPagerAdapter;

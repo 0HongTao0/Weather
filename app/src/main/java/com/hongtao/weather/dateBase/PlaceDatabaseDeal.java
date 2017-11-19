@@ -1,4 +1,4 @@
-package com.hongtao.weather.DateBase;
+package com.hongtao.weather.dateBase;
 
 import android.content.ContentValues;
 import android.database.Cursor;
