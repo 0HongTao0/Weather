@@ -18,6 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="true"
             android:orientation="vertical">
 
 
@@ -49,11 +50,10 @@
                 android:textSize="18sp"/>
 
 
-
-            <com.android.volley.toolbox.NetworkImageView
+            <ImageView
                 android:id="@+id/now_iv_niv_sky"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center"/>
 
             <TextView
@@ -71,11 +71,11 @@
                 android:textColor="@color/White"/>
 
             <android.support.v7.widget.RecyclerView
+                android:nestedScrollingEnabled="true"
                 android:id="@+id/dailyforecast_rv_weather"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5sp"
-                tools:ignore="NestedScrolling">
+                android:layout_margin="5sp">
 
             </android.support.v7.widget.RecyclerView>
 
@@ -87,12 +87,13 @@
                 android:textColor="@color/White"/>
 
             <android.support.v7.widget.RecyclerView
+                android:nestedScrollingEnabled="true"
                 android:id="@+id/hour_forecast_rv_weather"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="NestedScrolling">
+                android:layout_height="wrap_content">
 
             </android.support.v7.widget.RecyclerView>
+
             <TextView
                 android:id="@+id/weather_tv_scroll_text"
                 android:layout_width="wrap_content"
@@ -100,8 +101,8 @@
                 android:clickable="true"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:gravity="center"
                 android:focusableInTouchMode="true"
+                android:gravity="center"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
                 android:textColor="@color/White"

@@ -1,22 +1,17 @@
 package com.hongtao.weather.adapter;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
-import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.hongtao.weather.R;
-import com.hongtao.weather.activity.WeatherApplication;
 import com.hongtao.weather.bean.DailyForecast;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -29,13 +24,13 @@ public class DailyForecastAdapter extends RecyclerView.Adapter<DailyForecastAdap
     private List<DailyForecast> mDailyForecasts;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        NetworkImageView mIvNightSky, mIvDaySky;
+        ImageView mIvNightSky, mIvDaySky;
         TextView mTvDate, mTvTemperature, mTvWindDirection, mTvWindSpeed;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mIvNightSky = (NetworkImageView) itemView.findViewById(R.id.dailyforecast_iv_nightsky);
-            mIvDaySky = (NetworkImageView) itemView.findViewById(R.id.dailyforecast_iv_daysky);
+            mIvNightSky = (ImageView) itemView.findViewById(R.id.dailyforecast_iv_nightsky);
+            mIvDaySky = (ImageView) itemView.findViewById(R.id.dailyforecast_iv_daysky);
             mTvDate = (TextView) itemView.findViewById(R.id.dailyforecast_tv_date);
             mTvTemperature = (TextView) itemView.findViewById(R.id.dailyforecast_tv_temperature);
             mTvWindDirection = (TextView) itemView.findViewById(R.id.dailyforecast_tv_winddirection);
@@ -61,20 +56,25 @@ public class DailyForecastAdapter extends RecyclerView.Adapter<DailyForecastAdap
         holder.mTvTemperature.setText(dailyForecast.getTemperature());
         holder.mTvWindDirection.setText(dailyForecast.getWindDirection());
         holder.mTvWindSpeed.setText(dailyForecast.getWindSpeed());
-        RequestQueue requestQueue = Volley.newRequestQueue(WeatherApplication.getContext());
-        ImageLoader imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
-            @Override
-            public Bitmap getBitmap(String s) {
-                return null;
-            }
+        Glide.with(holder.mIvDaySky.getContext())
+                .load(ICON_ADDRESS + dailyForecast.getDaySky() + ".png")
+                .error(R.drawable.ding)
+                .placeholder(R.drawable.ding)
+                .fitCenter()
+                .centerCrop()
+                .dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // 设置缓存的策略
+                .into(holder.mIvDaySky);
 
-            @Override
-            public void putBitmap(String s, Bitmap bitmap) {
-
-            }
-        });
-        holder.mIvDaySky.setImageUrl(ICON_ADDRESS + dailyForecast.getDaySky() + ".png", imageLoader);
-        holder.mIvNightSky.setImageUrl(ICON_ADDRESS + dailyForecast.getNightSky() + ".png", imageLoader);
+        Glide.with(holder.mIvNightSky.getContext())
+                .load(ICON_ADDRESS + dailyForecast.getNightSky()+ ".png")
+                .error(R.drawable.ding)
+                .placeholder(R.drawable.ding)
+                .fitCenter()
+                .centerCrop()
+                .dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // 设置缓存的策略
+                .into(holder.mIvNightSky);
     }
 
     @Override

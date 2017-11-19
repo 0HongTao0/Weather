@@ -12,12 +12,12 @@
         android:textColor="@color/White"
         android:textSize="25sp"/>
 
-    <com.android.volley.toolbox.NetworkImageView
+    <ImageView
         android:id="@+id/hourforecast_niv_sky"
-        android:layout_width="0dip"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_weight="1"
-        android:gravity="center"/>
+        android:layout_gravity="center"/>
 
     <TextView
         android:id="@+id/hourforecast_tv_temperature"

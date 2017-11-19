@@ -11,10 +11,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.hongtao.weather.R;
 import com.hongtao.weather.activity.WeatherApplication;
 import com.hongtao.weather.adapter.DailyForecastAdapter;
@@ -51,7 +53,7 @@ public class WeatherFragment extends Fragment {
     @BindView(R.id.now_tv_wind_direction)
     TextView mNowTvWindDirection;
     @BindView(R.id.now_iv_niv_sky)
-    NetworkImageView mNowIvNivSky;
+    ImageView mNowIvNivSky;
     @BindView(R.id.now_tv_air)
     TextView mNowTvAir;
     @BindView(R.id.dailyforecast_rv_weather)
@@ -96,7 +98,15 @@ public class WeatherFragment extends Fragment {
 
                         }
                     });
-                    mNowIvNivSky.setImageUrl(ICON_ADDRESS + nowWeather.getSky() + ".png", imageLoader);
+                    Glide.with(getContext())
+                            .load(ICON_ADDRESS + nowWeather.getSky() + ".png")
+                            .error(R.drawable.ding)
+                            .placeholder(R.drawable.ding)
+                            .fitCenter()
+                            .centerCrop()
+                            .dontAnimate()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL) // 设置缓存的策略
+                            .into(mNowIvNivSky);
                     break;
                 case UPDATE_WEATHER_DAILY_FORECAST:
                     DailyForecastAdapter dailyForecastAdapter = new DailyForecastAdapter((List<DailyForecast>) msg.obj);
@@ -115,6 +125,7 @@ public class WeatherFragment extends Fragment {
                 case UPDATE_WEATHER_SUGGESTION_MESSAGE:
                     mWeatherTvScrollText.setText((String) msg.obj);
                     break;
+                default:
             }
         }
     };

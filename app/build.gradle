@@ -39,4 +39,5 @@ dependencies {
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.2'
     compile 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.2'
     compile project(':volley')
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 }

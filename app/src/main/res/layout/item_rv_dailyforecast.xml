@@ -15,16 +15,16 @@
         android:textSize="20sp"/>
 
 
-    <com.android.volley.toolbox.NetworkImageView
+    <ImageView
         android:id="@+id/dailyforecast_iv_daysky"
-        android:layout_width="0dip"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_weight="1"/>
 
-    <com.android.volley.toolbox.NetworkImageView
+    <ImageView
         android:id="@+id/dailyforecast_iv_nightsky"
-        android:layout_width="0dip"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_weight="1"/>
 
     <LinearLayout
