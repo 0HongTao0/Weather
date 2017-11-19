@@ -175,6 +175,7 @@ public class WeatherFragment extends Fragment {
     }
 
     private void initView() {
+        mWeatherSlRefresh.setEnableLoadmore(false);
         mHourForecastRvWeather.setNestedScrollingEnabled(false);
         mHourForecastRvWeather.setNestedScrollingEnabled(false);
         if (NetwordUtil.netIsWork(getActivity())) {
