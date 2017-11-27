@@ -6,7 +6,7 @@
     <TextView
         android:id="@+id/hourforecast_tv_time"
         android:layout_width="0dip"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
         android:textColor="@color/White"
@@ -21,7 +21,7 @@
     <TextView
         android:id="@+id/hourforecast_tv_temperature"
         android:layout_width="0dip"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
         android:textColor="@color/White"
