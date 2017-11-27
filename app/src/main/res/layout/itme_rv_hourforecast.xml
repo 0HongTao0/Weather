@@ -16,7 +16,6 @@
         android:id="@+id/hourforecast_niv_sky"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_weight="1"
         android:layout_gravity="center"/>
 
     <TextView

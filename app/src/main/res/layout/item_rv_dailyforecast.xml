@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
 
     <TextView
@@ -18,25 +19,24 @@
     <ImageView
         android:id="@+id/dailyforecast_iv_daysky"
         android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_weight="1"/>
+        android:layout_height="48dp"/>
 
     <ImageView
         android:id="@+id/dailyforecast_iv_nightsky"
         android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_weight="1"/>
+        android:layout_height="48dp"/>
 
     <LinearLayout
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/dailyforecast_tv_temperature"
             android:layout_width="wrap_content"
-            android:layout_height="0dip"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
             android:textColor="#ffffff"/>
@@ -45,7 +45,7 @@
         <TextView
             android:id="@+id/dailyforecast_tv_winddirection"
             android:layout_width="wrap_content"
-            android:layout_height="0dip"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
             android:textColor="@color/White"/>
@@ -53,7 +53,7 @@
         <TextView
             android:id="@+id/dailyforecast_tv_windspeed"
             android:layout_width="wrap_content"
-            android:layout_height="0dip"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
             android:textColor="@color/White"/>
